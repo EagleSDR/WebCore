@@ -1,0 +1,76 @@
+.eagle_dialog_root {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    pointer-events: none;
+    display: flex;
+    z-index: 1000;
+    font-family: 'Roboto', sans-serif;
+}
+
+.eagle_dialog_root_active {
+    background-color: #0000007d;
+    pointer-events: all;
+}
+
+.eagle_dialog_content {
+    margin:auto;
+    padding-top: 30px;
+    opacity: 0;
+}
+
+.eagle_dialog_content_active {
+    padding-top: 0;
+    opacity:1;
+}
+
+.eagle_dialog_box {
+    background-color: #36393f;
+    border-radius: 5px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.eagle_dialog_box_content {
+    padding:15px;
+    width:500px;
+    max-height: 400px;
+    min-height: 100px;
+}
+
+.eagle_dialog_box_footer {
+    padding: 15px;
+    background-color: #2f3136;
+    display: flex;
+    flex-direction: row-reverse;
+}
+
+.eagle_dialog_box_footer_btn {
+    color: white;
+    padding: 10px 22px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 15px;
+    margin-left: 10px;
+}
+
+.eagle_dialog_box_footer_btn_blue_disabled {
+    background-color: #3882dc66;
+    color: #ffffffbf;
+    cursor: not-allowed;
+}
+
+.eagle_dialog_box_footer_btn_blue {
+    background-color: #3882dc;
+}
+
+.eagle_dialog_box_footer_btn_blue:hover {
+    background-color: #4a90e5;
+}
+
+.eagle_dialog_box_footer_btn_minor:hover {
+    background-color: #ecf4ff0d;
+}

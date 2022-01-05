@@ -1,0 +1,110 @@
+import EagleLoggable from "../lib/EagleLoggable";
+import EagleUtil from "../lib/EagleUtil";
+import IEagleObjectConstructor from "../lib/web/IEagleObjectConstructor";
+import IEagleObjectContext from "../lib/web/IEagleObjectContext";
+import EagleControl from "./core/components/control/EagleControl";
+import EagleControlComponents from "./core/components/control/EagleControlComponents";
+import EagleWebFileManager from "./core/components/EagleWebFileManager";
+import EagleRadio from "./core/components/radio/EagleRadio";
+import EaglePluginManager from "./core/plugin/EaglePluginManager";
+import EagleDialogManager from "./ui/dialog/EagleDialogManager";
+import EagleWindow from "./ui/window/EagleWindow";
+import EagleWindowManager from "./ui/window/EagleWindowManager";
+import EagleSubdivideWindowLayer from "./ui/window/layers/EagleSubdivideWindowLayer";
+import EagleSubdivideWindowWrapper from "./ui/window/subdivide/EagleSubdivideWindowWrapper";
+import EagleNetObjectManager from "./web/EagleNetObjectManager";
+import EagleEndpointInfo from "./web/endpoints/info/EagleEndpointInfo";
+
+export default class EagleApp extends EagleLoggable {
+
+    constructor(mount: HTMLElement, netRoot: string) {
+        super("EagleApp");
+        this.mount = mount;
+        this.netRoot = netRoot;
+
+        //Create components
+        this.net = new EagleNetObjectManager(this.CreateUrl(true, "/ws/rpc", {
+            "access_token": this.GetAccessToken()
+        }));
+        this.plugins = new EaglePluginManager(this);
+
+        //Create UI components
+        this.dialogManager = new EagleDialogManager(mount);
+        this.windowManager = new EagleWindowManager(mount);
+
+        //TEST
+        var t = EagleUtil.CreateElement("div", null, mount);
+        t.style.position = "fixed";
+        t.style.top = "0";
+        t.style.bottom = "0";
+        t.style.left = "0";
+        t.style.right = "0";
+        var c = new EagleSubdivideWindowLayer(this.windowManager.CreateLayer(t, "test"));
+        c.CreateCell(new EagleSubdivideWindowWrapper(new EagleWindow(this.windowManager)));
+        c.CreateCell(new EagleSubdivideWindowWrapper(new EagleWindow(this.windowManager)));
+        c.CreateCell(new EagleSubdivideWindowWrapper(new EagleWindow(this.windowManager)));
+        c.CreateCell(new EagleSubdivideWindowWrapper(new EagleWindow(this.windowManager)));
+        c.CreateCell(new EagleSubdivideWindowWrapper(new EagleWindow(this.windowManager)));
+
+        //Register core components
+        this.RegisterClass("EagleWeb.Core.Web.EagleControlObject", EagleControl);
+        this.RegisterClass("EagleWeb.Core.Radio.EagleRadio", EagleRadio);
+        this.RegisterClass("EagleWeb.Core.Web.FileSystem.WebFsManager", EagleWebFileManager);
+    }
+
+    mount: HTMLElement;
+    netRoot: string;
+    net: EagleNetObjectManager;
+    plugins: EaglePluginManager;
+
+    dialogManager: EagleDialogManager;
+    windowManager: EagleWindowManager;
+
+    info: EagleEndpointInfo;
+    control: EagleControl;
+    components: EagleControlComponents;
+    pluginModules: { [pluginId: string]: { [classname: string]: string } };
+
+    private GetAccessToken(): string {
+        return "90VuwPtqv135S1TwjDVvehU4Dy94XO7T"; //TODO
+    }
+
+    private IsSsl(): boolean {
+        switch (document.location.protocol) {
+            case "http:": return false;
+            case "file:": return false;
+            case "https:": return true;
+        }
+        this.Warn("IsSsl: Unknown protocol. Assuming no SSL...");
+        return false;
+    }
+
+    CreateUrl(isWebsocket: boolean, path: string, query: {[key: string]: string}) {
+        var result = (isWebsocket ? "ws" : "http") + (this.IsSsl() ? "s" : "") + "://" + document.location.host + this.netRoot + path;
+        var keys = Object.keys(query);
+        for (var i = 0; i < keys.length; i++)
+            result += (i == 0 ? "?" : "&") + encodeURIComponent(keys[i]) + "=" + encodeURIComponent(query[keys[i]]);
+        return result;
+    }
+
+    async Init() {
+        //Request info
+        this.info = await EagleUtil.HttpGetRequestJson(this.CreateUrl(false, "/api/info", {})) as EagleEndpointInfo;
+
+        //Load plugins
+        await this.plugins.Init();
+
+        //Connect to WebSocket and get objects
+        this.control = await this.net.Connect() as EagleControl;
+        this.components = await this.control.GetComponents();
+        this.pluginModules = await this.control.GetPluginModules();
+
+        //Initialize plugins (DO THIS LAST)
+        await this.plugins.PostInit();
+    }
+
+    RegisterClass(classname: string, constructor: IEagleObjectConstructor) {
+        return this.net.RegisterClass(classname, constructor);
+    }
+
+}

@@ -1,0 +1,38 @@
+.eagle_mc_container {
+    position:absolute;
+    top:0;
+    bottom:0;
+    left:0;
+    right:0;
+    display:none;
+    z-index: 10;
+}
+
+.eagle_state_window_dragging .eagle_mc_container {
+    display: flex;
+}
+
+.eagle_mc_container_disabled {
+    display: none !important;
+}
+
+.eagle_mc_widget {
+    margin: auto;
+    padding: 15px;
+    background-color: black;
+    border-radius: 15px;
+    opacity: 0;
+}
+
+.eagle_state_window_dragging .eagle_mc_container:hover .eagle_mc_widget {
+    opacity: 1;
+}
+
+.eagle_mc_widget_core {
+    position: relative;
+}
+
+.eagle_mc_btn {
+    background-color: red;
+    position: absolute;
+}

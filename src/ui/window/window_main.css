@@ -1,0 +1,47 @@
+.eagle_window_root {
+    position: fixed;
+    background-color:black;
+    overflow: hidden;
+}
+
+.eagle_window_root_border {
+    border:1px solid black;
+    border-radius:5px;
+}
+
+.eagle_window_dragging {
+    opacity: 0.25;
+    pointer-events: none;
+}
+
+.eagle_window_header {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    padding: 15px;
+    background-color: #5c0000;
+    height: 10px;
+    cursor: move;
+}
+
+.eagle_window_active .eagle_window_header {
+    background-color: #e16b6b;
+}
+
+.eagle_window_content {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    top: 40px;
+}
+
+.eagle_window_handle {
+    position:absolute;
+    bottom: -4px;
+    right: -4px;
+    width: 8px;
+    height: 8px;
+    cursor:se-resize;
+}
