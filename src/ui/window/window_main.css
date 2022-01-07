@@ -1,12 +1,14 @@
 .eagle_window_root {
     position: fixed;
-    background-color:black;
+    background-color: black;
     overflow: hidden;
+    font-family: 'Roboto', sans-serif;
 }
 
 .eagle_window_root_border {
-    border:1px solid black;
-    border-radius:5px;
+    border: 1px solid black;
+    border-radius: 3px;
+    box-shadow: 0px 5px 15px 0px #00000026;
 }
 
 .eagle_window_dragging {
@@ -14,19 +16,54 @@
     pointer-events: none;
 }
 
+.eagle_window_active.eagle_window_root_border {
+    box-shadow: 0px 5px 15px 0px #0000004a;
+}
+
 .eagle_window_header {
     position: absolute;
     top: 0;
     left: 0;
     right: 0;
-    padding: 15px;
-    background-color: #5c0000;
-    height: 10px;
+    background-color: #32363c;
+    height: 30px;
     cursor: move;
+    display: flex;
+    flex-direction: row;
+}
+
+.eagle_window_header_title {
+    margin: auto 0;
+    color: white;
+    font-size: 15px;
+    padding: 0 10px;
+    margin-right: auto;
+}
+
+.eagle_window_header_btn {
+    padding: 0 10px;
+    width: 20px;
+    cursor: pointer;
+    background-size: 18px;
+    background-repeat: no-repeat;
+    background-position: center;
+    transition: background-color ease-in-out 100ms;
+}
+
+.eagle_window_header_btn_disabled {
+    display: none;
+}
+
+.eagle_window_header_closebtn {
+    background-image: url(assets/close_white.svg);
+}
+
+.eagle_window_header_closebtn:hover {
+    background-color:#ffffff1c;
 }
 
 .eagle_window_active .eagle_window_header {
-    background-color: #e16b6b;
+    background-color: #464b52;
 }
 
 .eagle_window_content {
@@ -34,7 +71,8 @@
     bottom: 0;
     left: 0;
     right: 0;
-    top: 40px;
+    top: 30px;
+    background-color: #25262a;
 }
 
 .eagle_window_handle {
@@ -44,4 +82,30 @@
     width: 8px;
     height: 8px;
     cursor:se-resize;
+}
+
+/* ERROR WINDOW */
+
+.eagle_window_notfound {
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+}
+
+.eagle_window_notfound_title {
+    background-image: url(assets/warn_white.svg);
+    background-repeat: no-repeat;
+    background-position-y: center;
+    background-position-x: left;
+    background-size: 24px;
+    padding-left: 30px;
+    font-size: 15px;
+    line-height:26px;
+    color: white;
+}
+
+.eagle_window_notfound_sub {
+    margin-top: 5px;
+    font-size: 13px;
+    color: #bdbdbd;
 }

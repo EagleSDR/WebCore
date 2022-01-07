@@ -4,6 +4,7 @@ import IEaglePluginAsset from "../../../lib/plugin/IEaglePluginAsset";
 import IEaglePluginBootConfig from "../../../lib/plugin/IEaglePluginBootConfig";
 import IEaglePluginContext from "../../../lib/plugin/IEaglePluginContext";
 import IEaglePluginObjectConstructor from "../../../lib/plugin/IEaglePluginObjectConstructor";
+import IEaglePluginWindowRegistration from "../../../lib/plugin/IEaglePluginWindowRegistration";
 import EagleObject from "../../../lib/web/EagleObject";
 import IEagleObjectConstructor from "../../../lib/web/IEagleObjectConstructor";
 import IEagleObjectContext from "../../../lib/web/IEagleObjectContext";
@@ -12,6 +13,7 @@ import EagleApp from "../../EagleApp";
 import EagleEndpointInfoPlugin from "../../web/endpoints/info/EagleEndpointInfoPlugin";
 import EaglePluginAsset from "./EaglePluginAsset";
 import EaglePluginManager from "./EaglePluginManager";
+import EaglePluginWindowRegistration from "./EaglePluginWindowRegistration";
 
 class EaglePluginObjectConstructionProxy implements IEagleObjectFactory {
 
@@ -40,6 +42,7 @@ export default class EaglePluginContext implements IEaglePluginContext {
     private app: EagleApp;
     private manager: EaglePluginManager;
     private info: EagleEndpointInfoPlugin;
+    private windows: EaglePluginWindowRegistration[] = [];
 
     GetInfo(): EagleEndpointInfoPlugin {
         return this.info;
@@ -51,9 +54,14 @@ export default class EaglePluginContext implements IEaglePluginContext {
 
     Configure(config: IEaglePluginBootConfig): void {
         //Add classes
-        var k = Object.keys(config.web_classes);
-        for (var i = 0; i < k.length; i++)
-            this.RegisterClass(k[i], config.web_classes[k[i]]);
+        EaglePluginContext.HelperLoopDict(config.web_classes, (key: string, obj: IEaglePluginObjectConstructor) => {
+            this.RegisterClass(key, obj);
+        })
+
+        //Add windows
+        EaglePluginContext.HelperLoopDict(config.windows, (key: string, window: IEaglePluginWindowRegistration) => {
+            this.RegisterWindow(key, window);
+        })
 
         //Add demodulators
         for (var i = 0; i < config.demodulators.length; i++)
@@ -62,14 +70,6 @@ export default class EaglePluginContext implements IEaglePluginContext {
         //Add sources
         for (var i = 0; i < config.sources.length; i++)
             this.RegisterSource(config.sources[i]);
-    }
-
-    RegisterClass(classname: string, constructor: IEaglePluginObjectConstructor): void {
-        this.app.net.RegisterClassFactory(classname, new EaglePluginObjectConstructionProxy(this, constructor));
-    }
-
-    WaitInit(): Promise<void> {
-        return this.manager.WaitInit();
     }
 
     GetModule(classname: string): EagleObject {
@@ -96,12 +96,35 @@ export default class EaglePluginContext implements IEaglePluginContext {
         return new EaglePluginAsset(this.app, name, hash);
     }
 
-    RegisterSource(source: IEaglePluginSource): void {
+    private RegisterClass(classname: string, constructor: IEaglePluginObjectConstructor): void {
+        this.app.net.RegisterClassFactory(classname, new EaglePluginObjectConstructionProxy(this, constructor));
+    }
+
+    private RegisterSource(source: IEaglePluginSource): void {
         throw new Error("Method not implemented.");
     }
 
-    RegisterDemodulator(demod: IEaglePluginDemodulator): void {
+    private RegisterDemodulator(demod: IEaglePluginDemodulator): void {
         throw new Error("Method not implemented.");
+    }
+
+    private RegisterWindow(classname: string, registration: IEaglePluginWindowRegistration) {
+        //Create wrapper
+        var w = new EaglePluginWindowRegistration(this, registration, classname);
+
+        //Add locally
+        this.windows.push(w);
+
+        //Register
+        this.app.windowManager.RegisterWindow(w.GetClassName(), w);
+    }
+
+    private static HelperLoopDict<T>(dict: { [key: string]: T }, each: (key: string, value: T) => void) {
+        if (dict == null)
+            return;
+        var k = Object.keys(dict);
+        for (var i = 0; i < k.length; i++)
+            each(k[i], dict[k[i]]);
     }
 
 }

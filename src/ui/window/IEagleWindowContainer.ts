@@ -11,4 +11,7 @@ export default interface IEagleWindowContainer {
     WindowResizeRequested(deltaX: number, deltaY: number): void;
     WindowResizeEnd(): void;
 
+    WindowMadeActive(): void;
+    WindowMadeInactive(): void;
+
 }

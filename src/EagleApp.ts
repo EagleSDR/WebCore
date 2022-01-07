@@ -10,8 +10,9 @@ import EaglePluginManager from "./core/plugin/EaglePluginManager";
 import EagleDialogManager from "./ui/dialog/EagleDialogManager";
 import EagleWindow from "./ui/window/EagleWindow";
 import EagleWindowManager from "./ui/window/EagleWindowManager";
-import EagleSubdivideWindowLayer from "./ui/window/layers/EagleSubdivideWindowLayer";
-import EagleSubdivideWindowWrapper from "./ui/window/subdivide/EagleSubdivideWindowWrapper";
+import EagleWindowFactoryBar from "./ui/window/factory/EagleWindowFactoryBar";
+import EagleDockWindowLayer from "./ui/window/layers/EagleDockWindowLayer";
+import { RegisterTestWindows } from "./ui/window/misc/TestWindows";
 import EagleNetObjectManager from "./web/EagleNetObjectManager";
 import EagleEndpointInfo from "./web/endpoints/info/EagleEndpointInfo";
 
@@ -31,20 +32,21 @@ export default class EagleApp extends EagleLoggable {
         //Create UI components
         this.dialogManager = new EagleDialogManager(mount);
         this.windowManager = new EagleWindowManager(mount);
+        this.windowBar = new EagleWindowFactoryBar(EagleUtil.CreateElement("div", null, mount), this.windowManager);
 
         //TEST
-        var t = EagleUtil.CreateElement("div", null, mount);
+        RegisterTestWindows(this.windowManager);
+        var t = EagleUtil.CreateElement("div", "LAYER_TEST", mount);
         t.style.position = "fixed";
         t.style.top = "0";
         t.style.bottom = "0";
         t.style.left = "0";
         t.style.right = "0";
-        var c = new EagleSubdivideWindowLayer(this.windowManager.CreateLayer(t, "test"));
-        c.CreateCell(new EagleSubdivideWindowWrapper(new EagleWindow(this.windowManager)));
-        c.CreateCell(new EagleSubdivideWindowWrapper(new EagleWindow(this.windowManager)));
-        c.CreateCell(new EagleSubdivideWindowWrapper(new EagleWindow(this.windowManager)));
-        c.CreateCell(new EagleSubdivideWindowWrapper(new EagleWindow(this.windowManager)));
-        c.CreateCell(new EagleSubdivideWindowWrapper(new EagleWindow(this.windowManager)));
+        var c = new EagleDockWindowLayer(t, this.windowManager);
+        this.windowManager.RegisterLayer("test", c);
+
+        //Load windows
+        this.windowManager.LoadAll();
 
         //Register core components
         this.RegisterClass("EagleWeb.Core.Web.EagleControlObject", EagleControl);
@@ -59,6 +61,7 @@ export default class EagleApp extends EagleLoggable {
 
     dialogManager: EagleDialogManager;
     windowManager: EagleWindowManager;
+    windowBar: EagleWindowFactoryBar;
 
     info: EagleEndpointInfo;
     control: EagleControl;

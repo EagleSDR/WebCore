@@ -13,8 +13,6 @@ export default class EagleWindowMountControl {
         this.mount = EagleUtil.CreateElement("div", "eagle_mc_container", container);
         this.widget = EagleUtil.CreateElement("div", "eagle_mc_widget", this.mount);
         this.widgetCore = EagleUtil.CreateElement("div", "eagle_mc_widget_core", this.widget);
-        this.widget.style.width = this.CalculateSize(3) + "px";
-        this.widget.style.height = this.CalculateSize(3) + "px";
     }
 
     private mount: HTMLElement;
@@ -25,10 +23,6 @@ export default class EagleWindowMountControl {
         //Make
         var b = EagleUtil.CreateElement("div", "eagle_mc_btn", this.widgetCore);
         b.classList.add(classname);
-        b.style.left = (gridX * (WIDGET_CELL_SIZE + WIDGET_CELL_SPACING)) + "px";
-        b.style.top = (gridY * (WIDGET_CELL_SIZE + WIDGET_CELL_SPACING)) + "px";
-        b.style.width = WIDGET_CELL_SIZE + "px";
-        b.style.height = WIDGET_CELL_SIZE + "px";
         (b as unknown as IEagleWindowDropMount).OnEagleWindowDropped = callback;
 
         return this;
