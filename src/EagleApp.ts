@@ -37,16 +37,14 @@ export default class EagleApp extends EagleLoggable {
         //TEST
         RegisterTestWindows(this.windowManager);
         var t = EagleUtil.CreateElement("div", "LAYER_TEST", mount);
+        t.style.backgroundColor = "#0a0b0c";
         t.style.position = "fixed";
         t.style.top = "0";
         t.style.bottom = "0";
-        t.style.left = "0";
         t.style.right = "0";
+        t.style.left = "180px";
         var c = new EagleDockWindowLayer(t, this.windowManager);
         this.windowManager.RegisterLayer("test", c);
-
-        //Load windows
-        this.windowManager.LoadAll();
 
         //Register core components
         this.RegisterClass("EagleWeb.Core.Web.EagleControlObject", EagleControl);
@@ -102,8 +100,11 @@ export default class EagleApp extends EagleLoggable {
         this.components = await this.control.GetComponents();
         this.pluginModules = await this.control.GetPluginModules();
 
-        //Initialize plugins (DO THIS LAST)
+        //Initialize plugins
         await this.plugins.PostInit();
+
+        //Restore windows
+        this.windowManager.LoadAll();
     }
 
     RegisterClass(classname: string, constructor: IEagleObjectConstructor) {

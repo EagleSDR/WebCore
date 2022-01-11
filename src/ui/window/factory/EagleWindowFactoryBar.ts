@@ -1,6 +1,7 @@
 import EagleUtil from "../../../../lib/EagleUtil";
 import EagleWindowManager from "../EagleWindowManager";
 import IEagleWindowRegistration from "../IEagleWindowRegistration";
+import IEagleWindowFactoryItem from "./IEagleWindowFactoryItem";
 require("./factory.css");
 
 export default class EagleWindowFactoryBar {
@@ -11,22 +12,36 @@ export default class EagleWindowFactoryBar {
 
         //Set up mount
         this.mount.classList.add("eagle_window_bar");
-
-        //Bind
-        this.manager.RegisterWindowBinding((classname: string, reg: IEagleWindowRegistration) => new BarItem(this.mount, this.manager, classname, reg));
     }
 
     private mount: HTMLElement;
     private manager: EagleWindowManager;
+    private items: BarItem[] = [];
+
+    AddItem(item: IEagleWindowFactoryItem) {
+        this.items.push(new BarItem(this.mount, this.manager, item));
+    }
+
+    RemoveItem(item: IEagleWindowFactoryItem): boolean {
+        //Search
+        for (var i = 0; i < this.items.length; i++) {
+            if (this.items[i].GetRegistration() == item) {
+                this.items.splice(i, 1);
+                return true;
+            }
+        }
+
+        //Failed
+        return false;
+    }
 
 }
 
 class BarItem {
 
-    constructor(container: HTMLElement, manager: EagleWindowManager, classname: string, reg: IEagleWindowRegistration) {
+    constructor(container: HTMLElement, manager: EagleWindowManager, reg: IEagleWindowFactoryItem) {
         //Set
         this.manager = manager;
-        this.classname = classname;
         this.reg = reg;
 
         //Create item
@@ -40,18 +55,25 @@ class BarItem {
 
         //Add events
         this.view.addEventListener("mousedown", (evt: MouseEvent) => {
-            this.manager.CreateWindowDragging(this.classname, {}, 300, 200, evt);
+            this.manager.CreateWindowClassDragging(this.reg.GetRegistration(), this.reg.GetSettings(), 300, 200, evt);
             evt.preventDefault();
             evt.stopPropagation();
         });
     }
 
     private manager: EagleWindowManager;
-    private classname: string;
-    private reg: IEagleWindowRegistration;
+    private reg: IEagleWindowFactoryItem;
 
     private view: HTMLElement;
     private label: HTMLElement;
     private preview: HTMLElement;
+
+    GetRegistration(): IEagleWindowFactoryItem {
+        return this.reg;
+    }
+
+    Remove() {
+        this.view.remove();
+    }
 
 }

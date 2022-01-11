@@ -30,11 +30,19 @@ export default class EagleWindowManager extends EagleLoggable {
     }
 
     private registrations: { [classname: string]: IEagleWindowRegistration } = {};
-    private registrationBindings: ((classname: string, reg: IEagleWindowRegistration) => void)[] = [];
     private layers: { [key: string]: IEagleWindowLayer } = {};
     private activeWindow: EagleWindow;
     private floatingWindowLayer: EagleFloatingWindowLayer;
     private isLoading: boolean = false;
+
+    GetClassnameOfWindow(window: IEagleWindowRegistration) {
+        var k = Object.keys(this.registrations);
+        for (var i = 0; i < k.length; i++) {
+            if (this.registrations[k[i]] == window)
+                return k[i];
+        }
+        throw Error("This window is not registered!");
+    }
 
     CreateWindow(classname: string, settings: any, width: number, height: number, x: number, y: number) {
         //Create the window
@@ -47,6 +55,17 @@ export default class EagleWindowManager extends EagleLoggable {
     CreateWindowDragging(classname: string, settings: any, width: number, height: number, evt: MouseEvent) {
         //Create the window
         var win = this.InflateWindow(classname, settings);
+
+        //Spawn in floating window
+        this.floatingWindowLayer.MakePopoutWindow(win, width, height, evt.clientX, evt.clientY);
+
+        //Make mouse move it
+        win.MakeMouseDragging();
+    }
+
+    CreateWindowClassDragging(window: IEagleWindowRegistration, settings: any, width: number, height: number, evt: MouseEvent) {
+        //Create the window
+        var win = new EagleWindow(this, window, this.GetClassnameOfWindow(window), settings);
 
         //Spawn in floating window
         this.floatingWindowLayer.MakePopoutWindow(win, width, height, evt.clientX, evt.clientY);
@@ -116,10 +135,6 @@ export default class EagleWindowManager extends EagleLoggable {
 
         //Add
         this.registrations[classname] = registration;
-
-        //Fire bindings
-        for (var i = 0; i < this.registrationBindings.length; i++)
-            this.registrationBindings[i](classname, registration);
     }
 
     //Registers a layer with the system.
@@ -130,17 +145,6 @@ export default class EagleWindowManager extends EagleLoggable {
 
         //Add
         this.layers[name] = layer;
-    }
-
-    //Registers a callback to be fired when a new window type is added. Also called for all existing types.
-    RegisterWindowBinding(callback: (classname: string, reg: IEagleWindowRegistration) => void) {
-        //Add
-        this.registrationBindings.push(callback);
-
-        //Call on existing
-        var k = Object.keys(this.registrations);
-        for (var i = 0; i < k.length; i++)
-            callback(k[i], this.registrations[k[i]]);
     }
 
     //Changes the active window to the specified one.

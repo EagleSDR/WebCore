@@ -17,20 +17,16 @@ export default class EaglePluginWindowRegistration implements IEagleWindowRegist
     private type: IEaglePluginWindowRegistration;
     private userClassname: string;
 
+    GetRegistration(): IEaglePluginWindowRegistration {
+        return this.type;
+    }
+
     GetClassName(): string {
         return this.plugin.GetInfo().developer_name + "." + this.plugin.GetInfo().plugin_name + "." + this.userClassname;
     }
 
     GetDisplayName(): string {
-        return this.type.EagleGetDisplayName();
-    }
-
-    GetGroupName(): string {
-        return this.type.EagleGetGroup();
-    }
-
-    GetPreview(): HTMLElement {
-        return this.type.EagleGetPreview();
+        return this.userClassname;
     }
 
     Construct(context: IEagleWindowContext): EagleWindowImplementation {

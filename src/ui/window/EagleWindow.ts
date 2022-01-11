@@ -277,6 +277,22 @@ export default class EagleWindow implements IEagleWindowContext {
             this.container.WindowResizeEnd();
     }
 
+    private GetContentPaddingTop(): number {
+        return 30;
+    }
+
+    private GetContentPaddingLeft(): number {
+        return 0;
+    }
+
+    private GetContentPaddingRight(): number {
+        return 0;
+    }
+
+    private GetContentPaddingBottom(): number {
+        return 0;
+    }
+
     /* PUBLIC API */
 
     //Sets the current window title.
@@ -303,12 +319,12 @@ export default class EagleWindow implements IEagleWindowContext {
 
     //Gets the width of the window content.
     GetWidth(): number {
-        return Math.floor(this.width);
+        return Math.floor(this.width - this.GetContentPaddingLeft() - this.GetContentPaddingRight());
     }
 
     //Gets the height of the window content.
     GetHeight(): number {
-        return Math.floor(this.height);
+        return Math.floor(this.height - this.GetContentPaddingTop() - this.GetContentPaddingBottom());
     }
 
     //Creates a button in the window header

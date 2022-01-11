@@ -4,6 +4,7 @@ import IEaglePluginAsset from "../../../lib/plugin/IEaglePluginAsset";
 import IEaglePluginBootConfig from "../../../lib/plugin/IEaglePluginBootConfig";
 import IEaglePluginContext from "../../../lib/plugin/IEaglePluginContext";
 import IEaglePluginObjectConstructor from "../../../lib/plugin/IEaglePluginObjectConstructor";
+import IEaglePluginWindowInstance from "../../../lib/plugin/IEaglePluginWindowInstance";
 import IEaglePluginWindowRegistration from "../../../lib/plugin/IEaglePluginWindowRegistration";
 import EagleObject from "../../../lib/web/EagleObject";
 import IEagleObjectConstructor from "../../../lib/web/IEagleObjectConstructor";
@@ -13,6 +14,7 @@ import EagleApp from "../../EagleApp";
 import EagleEndpointInfoPlugin from "../../web/endpoints/info/EagleEndpointInfoPlugin";
 import EaglePluginAsset from "./EaglePluginAsset";
 import EaglePluginManager from "./EaglePluginManager";
+import EaglePluginWindowInstance from "./EaglePluginWindowInstance";
 import EaglePluginWindowRegistration from "./EaglePluginWindowRegistration";
 
 class EaglePluginObjectConstructionProxy implements IEagleObjectFactory {
@@ -42,7 +44,9 @@ export default class EaglePluginContext implements IEaglePluginContext {
     private app: EagleApp;
     private manager: EaglePluginManager;
     private info: EagleEndpointInfoPlugin;
+
     private windows: EaglePluginWindowRegistration[] = [];
+    private windowInstances: EaglePluginWindowInstance[] = [];
 
     GetInfo(): EagleEndpointInfoPlugin {
         return this.info;
@@ -94,6 +98,43 @@ export default class EaglePluginContext implements IEaglePluginContext {
 
         //Convert
         return new EaglePluginAsset(this.app, name, hash);
+    }
+
+    RegisterWindowInstance(window: IEaglePluginWindowRegistration, instance: IEaglePluginWindowInstance): void {
+        //Scan for the wrapper for the window
+        var wrapper: EaglePluginWindowRegistration;
+        for (var i = 0; i < this.windows.length; i++) {
+            if (this.windows[i].GetRegistration() == window)
+                wrapper = this.windows[i];
+        }
+        if (wrapper == null)
+            throw Error("This window class has not been registered.");
+
+        //Wrap
+        var w = new EaglePluginWindowInstance(instance, wrapper);
+
+        //Add locally
+        this.windowInstances.push(w);
+
+        //Register
+        this.app.windowBar.AddItem(w);
+    }
+
+    UnregisterWindowInstance(instance: IEaglePluginWindowInstance): void {
+        //Scan for the wrapper for the instance
+        var wrapper: EaglePluginWindowInstance;
+        for (var i = 0; i < this.windowInstances.length; i++) {
+            if (this.windowInstances[i].GetInstance() == instance)
+                wrapper = this.windowInstances[i];
+        }
+        if (wrapper == null)
+            return;
+
+        //Remove locally
+        this.windowInstances.splice(i, 1);
+
+        //Unregister
+        this.app.windowBar.RemoveItem(wrapper);
     }
 
     private RegisterClass(classname: string, constructor: IEaglePluginObjectConstructor): void {
