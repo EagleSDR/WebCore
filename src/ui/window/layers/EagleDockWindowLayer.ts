@@ -523,9 +523,6 @@ export default class EagleDockWindowLayer extends EagleSubdivideContainerBase im
 
                 //Update
                 this.SetSize(this.lastWidth, this.lastHeight);
-
-                //TEST
-                console.log(this.Save());
             }
         }, 500);
     }
@@ -547,6 +544,7 @@ export default class EagleDockWindowLayer extends EagleSubdivideContainerBase im
     SetContent(window: EagleWindow) {
         //Instead of setting the content in the root window, create a cell for it to be stored in
         var cell = this.ConstructCell();
+        cell.SetSize(this.width, this.height);
         this.cells.push(cell);
         cell.SetContent(window);
         this.Refresh();
