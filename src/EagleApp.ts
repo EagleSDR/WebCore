@@ -13,6 +13,7 @@ import EagleWindowManager from "./ui/window/EagleWindowManager";
 import EagleWindowFactoryBar from "./ui/window/factory/EagleWindowFactoryBar";
 import EagleDockWindowLayer from "./ui/window/layers/EagleDockWindowLayer";
 import { RegisterTestWindows } from "./ui/window/misc/TestWindows";
+import EagleManagedSocket from "./web/EagleManagedSocket";
 import EagleNetObjectManager from "./web/EagleNetObjectManager";
 import EagleEndpointInfo from "./web/endpoints/info/EagleEndpointInfo";
 
@@ -66,7 +67,7 @@ export default class EagleApp extends EagleLoggable {
     components: EagleControlComponents;
     pluginModules: { [pluginId: string]: { [classname: string]: string } };
 
-    private GetAccessToken(): string {
+    GetAccessToken(): string {
         return "90VuwPtqv135S1TwjDVvehU4Dy94XO7T"; //TODO
     }
 
@@ -109,6 +110,17 @@ export default class EagleApp extends EagleLoggable {
 
     RegisterClass(classname: string, constructor: IEagleObjectConstructor) {
         return this.net.RegisterClass(classname, constructor);
+    }
+
+    CreateManagedSocketById(id: string): EagleManagedSocket {
+        return new EagleManagedSocket(this, id);
+    }
+
+    CreateManagedSocketByName(name: string): EagleManagedSocket {
+        var id = this.info.sockets[name];
+        if (id == null)
+            throw Error("No socket exists with the name \"" + name + "\".");
+        return this.CreateManagedSocketById(id);
     }
 
 }

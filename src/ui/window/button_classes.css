@@ -1,0 +1,55 @@
+.eagle_window_header_btn_close {
+    background-image: url(assets/close_white.svg);
+}
+
+.eagle_window_header_btn_settings {
+    background-image: url(assets/settings_white.svg);
+}
+
+.eagle_window_header_btn_add {
+    background-image: url(assets/add_white.svg);
+}
+
+.eagle_window_header_btn_help {
+    background-image: url(assets/help_white.svg);
+}
+
+.eagle_window_header_btn_search {
+    background-image: url(assets/search_white.svg);
+}
+
+.eagle_window_header_btn_launch {
+    background-image: url(assets/launch_white.svg);
+}
+
+.eagle_window_header_btn_reload {
+    background-image: url(assets/reload_white.svg);
+}
+
+.eagle_window_header_btn_addon {
+    background-image: url(assets/addon_white.svg);
+}
+
+.eagle_window_header_btn_share {
+    background-image: url(assets/share_white.svg);
+}
+
+.eagle_window_header_btn_send {
+    background-image: url(assets/send_white.svg);
+}
+
+.eagle_window_header_btn_undo {
+    background-image: url(assets/undo_white.svg);
+}
+
+.eagle_window_header_btn_redo {
+    background-image: url(assets/redo_white.svg);
+}
+
+.eagle_window_header_btn_capture {
+    background-image: url(assets/capture_white.svg);
+}
+
+.eagle_window_header_btn_edit {
+    background-image: url(assets/edit_white.svg);
+}

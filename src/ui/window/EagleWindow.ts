@@ -1,6 +1,7 @@
 import EagleEventDispatcher from "../../../lib/EagleEventDispatcher";
 import EagleUtil from "../../../lib/EagleUtil";
 import IEagleEventDispatcherHandler from "../../../lib/IEagleEventDispatcherHandler";
+import { EagleButtonType } from "../../../lib/ui/window/EagleButtonType";
 import EagleWindowImplementation from "../../../lib/ui/window/EagleWindowImplementation";
 import IEagleWindowButton from "../../../lib/ui/window/IEagleWindowButton";
 import IEagleWindowContext from "../../../lib/ui/window/IEagleWindowContext";
@@ -10,6 +11,7 @@ import IEagleWindowDropMount from "./IEagleWindowDropMount";
 import IEagleWindowRegistration from "./IEagleWindowRegistration";
 import ISavedWindowData from "./misc/ISavedWindowData";
 require("./window_main.css");
+require("./button_classes.css");
 
 class EagleWindowFrame {
 
@@ -33,6 +35,8 @@ class EagleWindowFrame {
 
 }
 
+const BUTTON_CLASS_PREFIX = "eagle_window_header_btn_";
+
 class EagleWindowButton implements IEagleWindowButton {
 
     constructor(container: HTMLElement, classname: string) {
@@ -46,12 +50,46 @@ class EagleWindowButton implements IEagleWindowButton {
             this.dispatcher.Send(this);
             evt.preventDefault();
             evt.stopPropagation();
-        })
+        }, {
+            capture: true
+        });
+
+        //Add mousedown event so we can't move the window around with the buttons
+        this.view.addEventListener("mousedown", (evt: MouseEvent) => {
+            evt.preventDefault();
+            evt.stopPropagation();
+        }, {
+            capture: true
+        });
     }
 
     private view: HTMLElement;
     private classname: string;
     private dispatcher: EagleEventDispatcher<IEagleWindowButton> = new EagleEventDispatcher();
+
+    static ResolveType(type: EagleButtonType) {
+        switch (type) {
+            case EagleButtonType.CLOSE:     return BUTTON_CLASS_PREFIX + "close";
+            case EagleButtonType.SETTINGS:  return BUTTON_CLASS_PREFIX + "settings";
+            case EagleButtonType.ADD:       return BUTTON_CLASS_PREFIX + "add";
+            case EagleButtonType.HELP:      return BUTTON_CLASS_PREFIX + "help";
+            case EagleButtonType.SEARCH:    return BUTTON_CLASS_PREFIX + "search";
+            case EagleButtonType.LAUNCH:    return BUTTON_CLASS_PREFIX + "launch";
+            case EagleButtonType.RELOAD:    return BUTTON_CLASS_PREFIX + "reload";
+            case EagleButtonType.ADDONS:    return BUTTON_CLASS_PREFIX + "addon";
+            case EagleButtonType.SHARE:     return BUTTON_CLASS_PREFIX + "share";
+            case EagleButtonType.SEND:      return BUTTON_CLASS_PREFIX + "send";
+            case EagleButtonType.UNDO:      return BUTTON_CLASS_PREFIX + "undo";
+            case EagleButtonType.RELOAD:    return BUTTON_CLASS_PREFIX + "redo";
+            case EagleButtonType.CAPTURE:   return BUTTON_CLASS_PREFIX + "capture";
+            case EagleButtonType.EDIT:      return BUTTON_CLASS_PREFIX + "edit";
+            default: throw Error("Unknown button type.");
+        }
+    }
+
+    SetOrder(order: number) {
+        this.view.style.order = order.toString();
+    }
 
     SetClassName(classname: string): void {
         //Remove old
@@ -117,7 +155,8 @@ export default class EagleWindow implements IEagleWindowContext {
         });
 
         //Create close button
-        this.closeBtn = this.CreateButton("eagle_window_header_closebtn");
+        this.closeBtn = this.CreateButton(EagleButtonType.CLOSE);
+        this.closeBtn.SetOrder(1000);
         this.closeBtn.Bind({
             HandleEvent: () => {
                 this.CloseWindow();
@@ -139,7 +178,7 @@ export default class EagleWindow implements IEagleWindowContext {
     private frame: EagleWindowFrame;
     private classname: string;
     private buttons: EagleWindowButton[] = [];
-    private closeBtn: IEagleWindowButton;
+    private closeBtn: EagleWindowButton;
 
     private title: string;
     private width: number;
@@ -328,7 +367,12 @@ export default class EagleWindow implements IEagleWindowContext {
     }
 
     //Creates a button in the window header
-    CreateButton(classname: string): IEagleWindowButton {
+    CreateButton(icon: EagleButtonType): EagleWindowButton {
+        return this.CreateButtonCustom(EagleWindowButton.ResolveType(icon));
+    }
+
+    //Creates a custom button in the window header
+    CreateButtonCustom(classname: string): EagleWindowButton {
         var btn = new EagleWindowButton(this.frame.header, classname);
         this.buttons.push(btn);
         return btn;

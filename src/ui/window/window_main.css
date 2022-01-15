@@ -54,11 +54,7 @@
     display: none;
 }
 
-.eagle_window_header_closebtn {
-    background-image: url(assets/close_white.svg);
-}
-
-.eagle_window_header_closebtn:hover {
+.eagle_window_header_btn:hover {
     background-color:#ffffff1c;
 }
 

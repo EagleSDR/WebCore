@@ -7,6 +7,7 @@ import IEaglePluginObjectConstructor from "../../../lib/plugin/IEaglePluginObjec
 import IEaglePluginWindowInstance from "../../../lib/plugin/IEaglePluginWindowInstance";
 import IEaglePluginWindowRegistration from "../../../lib/plugin/IEaglePluginWindowRegistration";
 import EagleObject from "../../../lib/web/EagleObject";
+import IEagleManagedSocket from "../../../lib/web/IEagleManagedSocket";
 import IEagleObjectConstructor from "../../../lib/web/IEagleObjectConstructor";
 import IEagleObjectContext from "../../../lib/web/IEagleObjectContext";
 import IEagleObjectFactory from "../../../lib/web/IEagleObjectFactory";
@@ -135,6 +136,10 @@ export default class EaglePluginContext implements IEaglePluginContext {
 
         //Unregister
         this.app.windowBar.RemoveItem(wrapper);
+    }
+
+    CreateSocket(name: string): IEagleManagedSocket {
+        return this.app.CreateManagedSocketByName(this.GetId() + "." + name);
     }
 
     private RegisterClass(classname: string, constructor: IEaglePluginObjectConstructor): void {
