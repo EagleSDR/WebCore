@@ -11,22 +11,38 @@ import EagleWebFilePicker from "../EagleWebFilePicker";
 
 export default abstract class EagleWebFileBasePicker extends EagleWebFilePicker {
 
-    constructor(manager: EagleWebFileManager, context: IEagleContext) {
+    constructor(manager: EagleWebFileManager, context: IEagleContext, settings: IEagleFilePickerSettings) {
         super(manager, context);
+
+        //Disable button by default
         this.SetConfirmButtonEnabled(false);
+
+        //Set text
+        this.SetDialogTitle(settings.name);
+
+        //Add types
+        for (var i = 0; i < settings.extensions.length; i++) {
+            //Fix common problems with the extension
+            var ext = settings.extensions[i].extension;
+            if (ext.includes('.'))
+                ext = ext.substr(ext.indexOf('.') + 1);
+
+            //Set
+            this.AddFileType(settings.extensions[i].description, ext);
+        }
+
+        //Add "any" type
+        this.AddFileType("Any Files", "*");
     }
 
     /* API */
 
     private completeCallback: (value: IEaglePickedFile) => void;
 
-    Prompt(settings: IEagleFilePickerSettings): Promise<IEaglePickedFile> {
+    Prompt(): Promise<IEaglePickedFile> {
         return new Promise<IEaglePickedFile>((resolve: (value: IEaglePickedFile) => void) => {
             //Set resolve
             this.completeCallback = resolve;
-
-            //Set text
-            this.SetDialogTitle(settings.name);
 
             //Show
             this.ShowDialog();

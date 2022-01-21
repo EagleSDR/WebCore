@@ -55,8 +55,6 @@ export default abstract class EagleWebFilePicker {
         this.nodeFilename = EagleUtil.CreateElement("input", "eagle_webfs_picker_footer_filename", footer) as HTMLInputElement;
         this.nodeFilename.type = "text";
         this.nodeType = EagleUtil.CreateElement("select", "eagle_webfs_picker_footer_type", footer) as HTMLSelectElement;
-        this.AddFileType("IQ Files", "wav");
-        this.AddFileType("Any Files", "*");
 
         //Add event to add the desired filename when the user is done editing the box
         this.nodeFilename.addEventListener('change', () => this.nodeFilename.value = this.CorrectFileName());
@@ -101,13 +99,6 @@ export default abstract class EagleWebFilePicker {
     private selectedElement: HTMLElement;
     private latestData: IWebFsDirectoryQuery;
     private isLoading: boolean = false;
-
-    private AddFileType(description: string, extension: string) {
-        var option = document.createElement('option');
-        option.value = extension;
-        option.innerText = description + " (*." + extension + ")";
-        this.nodeType.appendChild(option);
-    }
 
     private AddPathItem(name: string, isHome: boolean, url: string, callback: (url: string) => void) {
         //Add the divider
@@ -163,7 +154,8 @@ export default abstract class EagleWebFilePicker {
         EagleUtil.RemoveElementChildren(this.nodeContent);
         this.selectedElement = null;
 
-        //TODO: Add loader
+        //Add loading screen
+        this.nodeContent.classList.add("eagle_webfs_picker_content_loading");
     }
 
     private UpdateContent() {
@@ -183,6 +175,9 @@ export default abstract class EagleWebFilePicker {
         //Clear content
         EagleUtil.RemoveElementChildren(this.nodeContent);
         this.selectedElement = null;
+
+        //Remove loading screen
+        this.nodeContent.classList.remove("eagle_webfs_picker_content_loading");
 
         //Get data
         var data = this.latestData;
@@ -281,6 +276,13 @@ export default abstract class EagleWebFilePicker {
 
     protected GetContext(): IEagleContext {
         return this.context;
+    }
+
+    protected AddFileType(description: string, extension: string) {
+        var option = document.createElement('option');
+        option.value = extension;
+        option.innerText = description + " (*." + extension + ")";
+        this.nodeType.appendChild(option);
     }
 
     protected AddHeaderButton(text: string, classname: string, onClick: () => void) {

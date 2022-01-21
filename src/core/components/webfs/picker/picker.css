@@ -130,8 +130,14 @@
     overflow-y: scroll;
     flex-grow: 1;
     flex-shrink: 1;
-    max-height: 500px;
-    min-height: 200px;
+    height: 280px;
+}
+
+.eagle_webfs_picker_content_loading {
+    background-image: url(../../../../ui/assets/loader_white.svg);
+    background-size: 32px;
+    background-position: center;
+    background-repeat: no-repeat;
 }
 
 .eagle_webfs_picker_content_item {

@@ -50,13 +50,13 @@ export default class EagleWebFileManager extends EagleObject implements IEagleFi
     }
 
     PromptCreateFile(settings: IEagleFilePickerSettings): Promise<IEaglePickedFile> {
-        var picker = new EagleWebFileSavePicker(this, this.net.GetContext());
-        return picker.Prompt(settings);
+        var picker = new EagleWebFileSavePicker(this, this.net.GetContext(), settings);
+        return picker.Prompt();
     }
 
     PromptOpenFile(settings: IEagleFilePickerSettings): Promise<IEaglePickedFile> {
-        var picker = new EagleWebFileOpenPicker(this, this.net.GetContext());
-        return picker.Prompt(settings);
+        var picker = new EagleWebFileOpenPicker(this, this.net.GetContext(), settings);
+        return picker.Prompt();
     }
 
 }

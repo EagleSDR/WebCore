@@ -1,3 +1,4 @@
+import IEagleFilePickerSettings from "../../../../../../lib/core/files/IEagleFilePickerSettings";
 import IEagleContext from "../../../../../../lib/core/IEagleContext";
 import { EagleDialogButtonType } from "../../../../../../lib/ui/dialog/button/EagleDialogButtonType";
 import IEagleDialog from "../../../../../../lib/ui/dialog/IEagleDialog";
@@ -8,8 +9,8 @@ import EagleWebFileBasePicker from "./EagleWebFileBasePicker";
 
 export default class EagleWebFileSavePicker extends EagleWebFileBasePicker {
 
-    constructor(manager: EagleWebFileManager, context: IEagleContext) {
-        super(manager, context);
+    constructor(manager: EagleWebFileManager, context: IEagleContext, settings: IEagleFilePickerSettings) {
+        super(manager, context, settings);
     }
 
     /* INTERNAL */
