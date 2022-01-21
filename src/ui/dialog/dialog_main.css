@@ -8,23 +8,35 @@
     display: flex;
     z-index: 1000;
     font-family: 'Roboto', sans-serif;
+    transition: all 100ms ease-in-out;
 }
 
 .eagle_dialog_root_active {
-    background-color: #0000007d;
+    background-color: #0000009e;
     pointer-events: all;
 }
 
+.eagle_dialog_root_updating {
+    pointer-events: none !important;
+}
+
 .eagle_dialog_content {
-    margin:auto;
-    padding-top: 30px;
+    margin: auto;
+    padding-top: 80px;
+    padding-bottom: 20px;
     opacity: 0;
+    transition: all 100ms cubic-bezier(0.58, 1.07, 0.73, 1.19);
+    transform: scale(0.95);
 }
 
 .eagle_dialog_content_active {
     padding-top: 0;
-    opacity:1;
+    opacity: 1;
+    padding-top: 20px;
+    transform: scale(1);
 }
+
+/* DIALOG BOX */
 
 .eagle_dialog_box {
     background-color: #36393f;
@@ -35,9 +47,8 @@
 }
 
 .eagle_dialog_box_content {
-    padding:15px;
-    width:500px;
-    max-height: 400px;
+    width:800px;
+    max-height: 80vh;
     min-height: 100px;
 }
 
@@ -57,20 +68,49 @@
     margin-left: 10px;
 }
 
+.eagle_dialog_box_footer_btn_loading {
+    background-image: url(../assets/loader_white.svg);
+    color: transparent !important;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: 24px;
+    cursor: no-drop !important;
+}
+
+/* BUTTON - BLUE */
+
+.eagle_dialog_box_footer_btn_blue {
+    background-color: #3882dc;
+}
+
 .eagle_dialog_box_footer_btn_blue_disabled {
     background-color: #3882dc66;
     color: #ffffffbf;
     cursor: not-allowed;
 }
 
-.eagle_dialog_box_footer_btn_blue {
-    background-color: #3882dc;
-}
-
 .eagle_dialog_box_footer_btn_blue:hover {
     background-color: #4a90e5;
 }
 
+/* BUTTON - MINOR */
+
 .eagle_dialog_box_footer_btn_minor:hover {
     background-color: #ecf4ff0d;
+}
+
+/* BUTTON - RED */
+
+.eagle_dialog_box_footer_btn_red {
+    background-color: #f55050;
+}
+
+.eagle_dialog_box_footer_btn_red_disabled {
+    background-color: #f5505066;
+    color: #ffffffbf;
+    cursor: not-allowed;
+}
+
+.eagle_dialog_box_footer_btn_red:hover {
+    background-color: #f95c5c;
 }

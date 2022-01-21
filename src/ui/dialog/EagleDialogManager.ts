@@ -2,37 +2,64 @@ import EagleUtil from "../../../lib/EagleUtil";
 import EagleDialogBox from "./EagleDialogBox";
 require("./dialog_main.css");
 
-const ANIMATION_TIME: number = 200;
+const ANIMATION_TIME: number = 110;
 
 export default class EagleDialogManager {
 
     constructor(container: HTMLElement) {
         this.root = EagleUtil.CreateElement("div", "eagle_dialog_root", container);
         this.content = EagleUtil.CreateElement("div", "eagle_dialog_content", this.root);
-        //this.ShowDialog(new EagleDialogBox(document.createElement("div")));
     }
 
     private root: HTMLElement;
     private content: HTMLElement;
-    private current: EagleDialogBox;
-    private stack: EagleDialogBox[] = [];
+    private current: DialogBoxImpl;
+    private stack: DialogBoxImpl[] = [];
     private isUpdating: boolean = false;
     private updateWaiting: boolean = false;
 
-    ShowDialog(dialog: EagleDialogBox) {
-        this.stack.push(dialog);
-        this.Update();
+    // Creates a new dialog box but does not show it.
+    CreateDialog(): EagleDialogBox {
+        return new DialogBoxImpl(
+            (dialog: DialogBoxImpl) => {
+                //Remove from stack if it's already in it
+                this.RemoveFromStack(dialog);
+
+                //Push to the stack
+                this.stack.push(dialog);
+
+                //Trigger refresh
+                this.SafeUpdate();
+            },
+            (dialog: DialogBoxImpl, remove: boolean) => {
+                //Remove from stack if it's already in it
+                if (!this.RemoveFromStack(dialog))
+                    return;
+
+                //Trigger refresh
+                this.SafeUpdate();
+            }
+        );
     }
 
-    HideDialog(dialog: EagleDialogBox) {
+    // Gets the topmost stack item
+    private GetTopElement(): DialogBoxImpl {
+        if (this.stack.length == 0)
+            return null;
+        return this.stack[this.stack.length - 1];
+    }
+
+    // Simply removes the dialog from the stack. Does not make any other changes and does not call a refresh. Returns true if it was removed, otherwise false
+    private RemoveFromStack(dialog: DialogBoxImpl): boolean {
         var index = this.stack.indexOf(dialog);
-        if (index != -1) {
-            this.stack.splice(index, 1);
-            this.Update();
-        }
+        if (index == -1)
+            return false;
+        this.stack.splice(index, 1);
+        return true;
     }
 
-    private Update() {
+    // Schedules a refresh to happen soon.
+    private SafeUpdate() {
         //If we're already in progress, abort
         if (this.isUpdating) {
             this.updateWaiting = true;
@@ -43,59 +70,108 @@ export default class EagleDialogManager {
         this.isUpdating = true;
         this.updateWaiting = false;
 
-        //Check if we're going to activate or not
-        if (this.stack.length == 0 && this.current == null) {
-            //Do nothing
-            this.isUpdating = false;
-        }
-        else if (this.stack.length == 0) {
-            //Deactivate
-            this.root.classList.remove("eagle_dialog_root_active");
-            this.content.classList.remove("eagle_dialog_content_active");
+        //Add updating class
+        this.root.classList.add("eagle_dialog_root_updating");
 
-            //Wait for the animation to finish
-            setTimeout(() => {
-                //Remove eixsting
-                this.RemoveCurrent();
-
+        //Bit of a hack...wait for the next frame and do it. We do this to allow additional changes immediately after
+        window.requestAnimationFrame(() => {
+            //Update
+            this._UnsafeUpdateAsync().then(() => {
                 //Set state
                 this.isUpdating = false;
-                if (this.updateWaiting)
-                    this.Update();
-            }, ANIMATION_TIME);            
-        } else if (this.current != null) {
-            //Activating; Switching item
-            this.content.classList.remove("eagle_dialog_content_active");
-            setTimeout(() => {
-                //Remove existing
-                this.RemoveCurrent();
 
-                //Activate
-                this.isUpdating = false;
-                this.Update();
-            }, ANIMATION_TIME);
+                //Clear updating class
+                this.root.classList.remove("eagle_dialog_root_updating");
+
+                //Do it again if needed
+                if (this.updateWaiting)
+                    this.SafeUpdate();
+            });
+        });
+    }
+
+    // Performs an update. UNSAFE. RUNNING MULTIPLE AT A TIME WILL BREAK.
+    private async _UnsafeUpdateAsync() {
+        //Check state
+        if (this.stack.length == 0) {
+            //Nothing should be showing...
+            if (this.current != null) {
+                //Remove the current item
+                await this._HideCurrentAsync(true);
+            }
         } else {
-            //Activating, new item
-            this.current = this.stack[this.stack.length - 1];
-            this.content.appendChild(this.current.Activate());
-            this.root.classList.add("eagle_dialog_root_active");
-            this.content.classList.add("eagle_dialog_content_active");
+            //Something should be showing...
+            var next = this.GetTopElement();
+            if (this.current == next) {
+                //Already in a correct state.
+                return;
+            }
 
-            //Set timeout for animation
-            setTimeout(() => {
-                this.isUpdating = false;
-                if (this.updateWaiting)
-                    this.Update();
-            }, ANIMATION_TIME);
+            //Check if we need to hide the current view first
+            if (this.current != null) {
+                //Showing the wrong view. Hide the current view first...
+                await this._HideCurrentAsync(false);
+            }
+
+            //Set the correct view
+            this.current = next;
+            this.content.appendChild(this.current.GetRootNode());
+
+            //Set active
+            this.content.classList.add("eagle_dialog_content_active");
+            this.root.classList.add("eagle_dialog_root_active");
+
+            //Wait out the animation
+            await EagleDialogManager.DelayAsync(ANIMATION_TIME);
         }
     }
 
-    private RemoveCurrent() {
-        //Remove
-        EagleUtil.RemoveElementChildren(this.content);
-        if (this.current != null)
-            this.current.Deactivate();
+    private async _HideCurrentAsync(hideRoot: boolean) {
+        //Set state
         this.current = null;
+
+        //Make the content inactive and wait out the animation
+        this.content.classList.remove("eagle_dialog_content_active");
+        if (hideRoot)
+            this.root.classList.remove("eagle_dialog_root_active");
+        await EagleDialogManager.DelayAsync(ANIMATION_TIME);
+
+        //Remove content children
+        EagleUtil.RemoveElementChildren(this.content);
+    }
+
+    private static DelayAsync(delay: number): Promise<void> {
+        return new Promise<void>((resolve) => {
+            window.setTimeout(() => resolve(), delay);
+        });
+    }
+}
+
+class DialogBoxImpl extends EagleDialogBox {
+
+    constructor(showCallback: (dialog: DialogBoxImpl) => void, hideCallback: (dialog: DialogBoxImpl, remove: boolean) => void) {
+        super();
+        this.showCallback = showCallback;
+        this.hideCallback = hideCallback;
+    }
+
+    private showCallback: (dialog: DialogBoxImpl) => void;
+    private hideCallback: (dialog: DialogBoxImpl, remove: boolean) => void;
+
+    GetRootNode(): HTMLElement {
+        return this.node;
+    }
+
+    Show(): void {
+        this.showCallback(this);
+    }
+
+    Hide(): void {
+        this.hideCallback(this, false);
+    }
+
+    Remove(): void {
+        this.hideCallback(this, true);
     }
 
 }

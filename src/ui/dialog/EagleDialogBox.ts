@@ -1,34 +1,36 @@
 import EagleUtil from "../../../lib/EagleUtil";
+import IEagleDialog from "../../../lib/ui/dialog/IEagleDialog";
 import EagleDialogBoxButton from "./EagleDialogBoxButton";
 
-export default class EagleDialogBox {
+export default abstract class EagleDialogBox implements IEagleDialog {
 
-    constructor(node: HTMLElement) {
+    constructor() {
         this.node = EagleUtil.CreateElement("div", "eagle_dialog_box");
         this.content = EagleUtil.CreateElement("div", "eagle_dialog_box_content", this.node);
         this.footer = EagleUtil.CreateElement("div", "eagle_dialog_box_footer", this.node);
-        this.AddButton("OK", "blue");
-        this.AddButton("Cancel", "minor");
     }
 
-    private node: HTMLElement;
-    private content: HTMLElement;
-    private footer: HTMLElement;
+    protected node: HTMLElement;
+    protected content: HTMLElement;
+    protected footer: HTMLElement;
+
     private buttons: EagleDialogBoxButton[] = [];
 
-    Activate(): HTMLElement {
-        return this.node;
+    GetContent(): HTMLElement {
+        return this.content;
     }
 
-    Deactivate(): void {
-
-    }
-
-    AddButton(text: string, style: string): EagleDialogBoxButton {
-        var b = new EagleDialogBoxButton(text, style);
+    AddButton(text: string, style: string, callback: () => void): EagleDialogBoxButton {
+        var b = new EagleDialogBoxButton(text, style, callback);
         this.buttons.push(b);
         this.footer.appendChild(b.GetElement());
         return b;
     }
+
+    /* ABSTRACT */
+
+    abstract Show(): void;
+    abstract Hide(): void;
+    abstract Remove(): void;
 
 }
