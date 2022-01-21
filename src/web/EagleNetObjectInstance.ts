@@ -11,6 +11,7 @@ import EagleNetObjectPortApi from "./ports/EagleNetObjectPortApi";
 import EagleNetObjectPortEvent from "./ports/EagleNetObjectPortEvent";
 import EagleNetObjectPortPropertyPrimitive from "./ports/EagleNetObjectPortPropertyPrimitive";
 import EagleNetObjectPortPropertyObject from "./ports/EagleNetObjectPortPropertyObject";
+import IEagleContext from "../../lib/core/IEagleContext";
 
 export class EagleNetObjectInstance extends EagleNetObjectIO implements IEagleObjectContext {
 
@@ -61,6 +62,10 @@ export class EagleNetObjectInstance extends EagleNetObjectIO implements IEagleOb
 
     GetManager(): IEagleObjectManager {
         return this.manager;
+    }
+
+    GetContext(): IEagleContext {
+        return this.manager.GetContext();
     }
 
     GetPortNames(): string[] {

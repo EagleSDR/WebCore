@@ -1,3 +1,4 @@
+import IEaglePluginSource from "../../../../lib/plugin/client/IEaglePluginSource";
 import EagleObject from "../../../../lib/web/EagleObject";
 import IEagleObjectContext from "../../../../lib/web/IEagleObjectContext";
 import IEaglePortApi from "../../../../lib/web/ports/IEaglePortApi";
@@ -14,7 +15,9 @@ export default class EagleRadio extends EagleObject {
     }
 
     private PortCreateSession: IEaglePortApi;
-    PortActive: IEaglePortProperty<boolean>;
+
+    PortIsEnabled: IEaglePortProperty<boolean>;
+    PortSource: IEaglePortProperty<EagleObject>;
 
     async CreateSession(): Promise<EagleRadioSession> {
         var data = await this.PortCreateSession.SendRequest({});

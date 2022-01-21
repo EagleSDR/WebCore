@@ -1,3 +1,4 @@
+import IEagleContext from "../../../lib/core/IEagleContext";
 import IEaglePluginDemodulator from "../../../lib/plugin/client/IEaglePluginDemodulator";
 import IEaglePluginSource from "../../../lib/plugin/client/IEaglePluginSource";
 import IEaglePluginAsset from "../../../lib/plugin/IEaglePluginAsset";
@@ -140,6 +141,10 @@ export default class EaglePluginContext implements IEaglePluginContext {
 
     CreateSocket(name: string): IEagleManagedSocket {
         return this.app.CreateManagedSocketByName(this.GetId() + "." + name);
+    }
+
+    GetContext(): IEagleContext {
+        return this.app;
     }
 
     private RegisterClass(classname: string, constructor: IEaglePluginObjectConstructor): void {

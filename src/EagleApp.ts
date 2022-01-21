@@ -1,5 +1,8 @@
+import IEagleFileManager from "../lib/core/files/IEagleFileManager";
+import IEagleContext from "../lib/core/IEagleContext";
 import EagleLoggable from "../lib/EagleLoggable";
 import EagleUtil from "../lib/EagleUtil";
+import IEagleDialogBuilder from "../lib/ui/dialog/IEagleDialogBuilder";
 import IEagleObjectConstructor from "../lib/web/IEagleObjectConstructor";
 import IEagleObjectContext from "../lib/web/IEagleObjectContext";
 import EagleControl from "./core/components/control/EagleControl";
@@ -7,6 +10,7 @@ import EagleControlComponents from "./core/components/control/EagleControlCompon
 import EagleWebFileManager from "./core/components/EagleWebFileManager";
 import EagleRadio from "./core/components/radio/EagleRadio";
 import EaglePluginManager from "./core/plugin/EaglePluginManager";
+import EagleDialogBuilder from "./ui/dialog/builder/EagleDialogBuilder";
 import EagleDialogManager from "./ui/dialog/EagleDialogManager";
 import EagleWindow from "./ui/window/EagleWindow";
 import EagleWindowManager from "./ui/window/EagleWindowManager";
@@ -17,7 +21,7 @@ import EagleManagedSocket from "./web/EagleManagedSocket";
 import EagleNetObjectManager from "./web/EagleNetObjectManager";
 import EagleEndpointInfo from "./web/endpoints/info/EagleEndpointInfo";
 
-export default class EagleApp extends EagleLoggable {
+export default class EagleApp extends EagleLoggable implements IEagleContext {
 
     constructor(mount: HTMLElement, netRoot: string) {
         super("EagleApp");
@@ -25,7 +29,7 @@ export default class EagleApp extends EagleLoggable {
         this.netRoot = netRoot;
 
         //Create components
-        this.net = new EagleNetObjectManager(this.CreateUrl(true, "/ws/rpc", {
+        this.net = new EagleNetObjectManager(this, this.CreateUrl(true, "/ws/rpc", {
             "access_token": this.GetAccessToken()
         }));
         this.plugins = new EaglePluginManager(this);
@@ -121,6 +125,14 @@ export default class EagleApp extends EagleLoggable {
         if (id == null)
             throw Error("No socket exists with the name \"" + name + "\".");
         return this.CreateManagedSocketById(id);
+    }
+
+    GetFileManager(): IEagleFileManager {
+        return this.components.GetFileManager();
+    }
+
+    CreateDialogBuilder(): IEagleDialogBuilder {
+        return new EagleDialogBuilder(this.dialogManager);
     }
 
 }

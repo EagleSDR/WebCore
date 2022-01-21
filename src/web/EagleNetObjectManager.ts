@@ -1,3 +1,4 @@
+import IEagleContext from "../../lib/core/IEagleContext";
 import EagleEventDispatcher from "../../lib/EagleEventDispatcher";
 import EagleLoggable from "../../lib/EagleLoggable";
 import EagleObject from "../../lib/web/EagleObject";
@@ -5,6 +6,7 @@ import IEagleObjectConstructor from "../../lib/web/IEagleObjectConstructor";
 import IEagleObjectContext from "../../lib/web/IEagleObjectContext";
 import IEagleObjectFactory from "../../lib/web/IEagleObjectFactory";
 import IEagleObjectManager from "../../lib/web/IEagleObjectManager";
+import EagleApp from "../EagleApp";
 import { EagleNetObjectInstance } from "./EagleNetObjectInstance";
 import EagleNetObjectIO from "./EagleNetObjectIO";
 
@@ -24,9 +26,10 @@ class EagleObjectConstructionProxy implements IEagleObjectFactory {
 
 export default class EagleNetObjectManager extends EagleLoggable implements IEagleObjectManager {
 
-    constructor(url: string) {
+    constructor(app: EagleApp, url: string) {
         super("EagleNetObjectManager");
         this.url = url;
+        this.app = app;
     }
 
     Connect(): Promise<EagleObject> {
@@ -51,11 +54,16 @@ export default class EagleNetObjectManager extends EagleLoggable implements IEag
 
     OnReady: EagleEventDispatcher<EagleNetObjectManager> = new EagleEventDispatcher<EagleNetObjectManager>();
 
+    private app: EagleApp;
     private url: string;
     private sock: WebSocket;
     private classes: { [key: string]: IEagleObjectFactory } = {};
     private io: { [guid: string]: EagleNetObjectIO } = {};
     private connectCallback: (control: EagleObject) => void;
+
+    GetContext(): IEagleContext {
+        return this.app;
+    }
 
     AddIoObject(obj: EagleNetObjectIO) {
         //Get GUID
