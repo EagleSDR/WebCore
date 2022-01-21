@@ -8,6 +8,7 @@ import EagleApp from "../../EagleApp";
 import IWebFsCapacity from "./webfs/IWebFsCapacity";
 import IWebFsDirectoryQuery from "./webfs/IWebFsDirectoryQuery";
 import EagleWebFilePicker from "./webfs/picker/EagleWebFilePicker";
+import EagleWebFileOpenPicker from "./webfs/picker/implementations/EagleWebFileOpenPicker";
 import EagleWebFileSavePicker from "./webfs/picker/implementations/EagleWebFileSavePicker";
 
 export default class EagleWebFileManager extends EagleObject implements IEagleFileManager {
@@ -54,7 +55,8 @@ export default class EagleWebFileManager extends EagleObject implements IEagleFi
     }
 
     PromptOpenFile(settings: IEagleFilePickerSettings): Promise<IEaglePickedFile> {
-        throw new Error("Method not implemented.");
+        var picker = new EagleWebFileOpenPicker(this, this.net.GetContext());
+        return picker.Prompt(settings);
     }
 
 }
