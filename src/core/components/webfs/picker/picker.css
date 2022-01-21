@@ -1,0 +1,245 @@
+/* MISC */
+
+.eagle_webfs_picker {
+    display: flex;
+    flex-direction: column;
+}
+
+/* HEADER */
+
+.eagle_webfs_picker_title {
+    display: flex;
+    flex-direction: row;
+    padding: 15px;
+    padding-bottom: 0;
+    background-color: #2f3136;
+    color: white;
+    font-size: 15px;
+    font-weight: 700;
+}
+
+.eagle_webfs_picker_header_title {
+    color: white;
+    font-size: 15px;
+    font-weight: 700;
+}
+
+.eagle_webfs_picker_header_main_path {
+    display: flex;
+    flex-direction: row;
+    height:30px;
+}
+
+.eagle_webfs_picker_header_group {
+    display: flex;
+    flex-direction: row;
+}
+
+.eagle_webfs_picker_header_group_divider {
+    margin: 0 10px;
+    width: 1px;
+    background-color: #6e6e6e;
+    margin-top: 5px;
+    margin-bottom: 5px;
+}
+
+/* BUTTONS */
+
+.eagle_webfs_picker_header_btn {
+    border-radius: 4px;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 22px;
+    cursor: pointer;
+    width: 22px;
+    height: 22px;
+    padding: 5px 8px;
+}
+
+.eagle_webfs_picker_header_btn:hover {
+    background-color: #36393f;
+}
+
+/* PATH */
+
+.eagle_webfs_picker_paths {
+    padding: 10px 15px;
+    background-color: #2f3136;
+    display: flex;
+    height: 36px;
+}
+
+.eagle_webfs_picker_header_path_item {
+    display: flex;
+    padding: 0 6px;
+    cursor: pointer;
+    border-radius: 4px;
+}
+
+.eagle_webfs_picker_header_path_item:hover {
+    background-color: #36393f;
+}
+
+.eagle_webfs_picker_header_path_item_text {
+    margin: auto 0;
+    color: white;
+    font-size: 15px;
+}
+
+.eagle_webfs_picker_header_path_item_home {
+    background-image:url(assets/home_white.svg);
+    background-repeat: no-repeat;
+    background-size: 22px;
+    background-position: center;
+    width: 22px;
+}
+
+.eagle_webfs_picker_header_path_item_divider {
+    background-image: url(assets/right_white.svg);
+    background-repeat: no-repeat;
+    background-position-y: center;
+    background-position-x: center;
+    background-size: 20px;
+    width: 20px;
+}
+
+/* STORAGE */
+
+.eagle_webfs_picker_header_storage {
+    width: 200px;
+    margin-left: auto;
+    background: white;
+    border-radius: 5px;
+    position: relative;
+    overflow: hidden;
+    border: 1px solid #101112;
+}
+
+.eagle_webfs_picker_header_storage_bar {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    background: #3882dc;
+}
+
+/* CONTENT */
+
+.eagle_webfs_picker_content {
+    padding: 15px 0;
+    overflow-y: scroll;
+    flex-grow: 1;
+    flex-shrink: 1;
+    max-height: 500px;
+    min-height: 200px;
+}
+
+.eagle_webfs_picker_content_item {
+    display: flex;
+    padding: 0 15px;
+    cursor: pointer;
+}
+
+    .eagle_webfs_picker_content_item:hover {
+        background-color: #3b3f44;
+    }
+
+.eagle_webfs_picker_content_item_selected {
+    background-color: #44474c !important;
+}
+
+    .eagle_webfs_picker_content_item > * {
+        margin-left: 10px;
+        color: #d1d1d1;
+        font-size: 15px;
+        line-height: 30px;
+    }
+
+.eagle_webfs_picker_content_item_icon {
+    width: 22px;
+    flex-grow: 0;
+    flex-shrink: 0;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: 22px;
+    margin-left: 0 !important;
+}
+
+.eagle_webfs_picker_content_item_name {
+    width: 300px;
+    flex-grow: 1;
+    flex-shrink: 1;
+}
+
+.eagle_webfs_picker_content_item_date {
+    width: 200px;
+    flex-grow: 1;
+    flex-shrink: 1;
+}
+
+.eagle_webfs_picker_content_item_size {
+    width: 100px;
+    flex-grow: 1;
+    flex-shrink: 1;
+    text-align: right;
+}
+
+/* FOOTER */
+
+.eagle_webfs_picker_footer {
+    display: flex;
+    padding: 15px;
+    background-color: #2f3136;
+    padding-bottom: 0;
+}
+
+.eagle_webfs_picker_footer_filename {
+    padding: 10px;
+    border: 1px solid #6e6e6e;
+    background: #36393f;
+    border-radius: 5px;
+    color: white;
+    outline: none;
+    flex-grow: 1;
+}
+
+.eagle_webfs_picker_footer_type {
+    background: #36393f;
+    color: white;
+    border-radius: 5px;
+    padding: 10px;
+    margin-left: 5px;
+    flex-grow: 0;
+    flex-shrink: 0;
+    outline: none;
+}
+
+/* ICONS */
+
+.eagle_webfs_picker_icon_create_folder {
+    background-image: url(assets/create_folder_white.svg);
+}
+
+.eagle_webfs_picker_icon_folder {
+    background-image:url(assets/folder_white.svg);
+}
+
+.eagle_webfs_picker_icon_file {
+    background-image: url(assets/file_white.svg);
+}
+
+.eagle_webfs_picker_icon_code {
+    background-image: url(assets/code_white.svg);
+}
+
+.eagle_webfs_picker_icon_image {
+    background-image: url(assets/image_white.svg);
+}
+
+.eagle_webfs_picker_icon_iq {
+    background-image: url(assets/iq_white.svg);
+}
+
+.eagle_webfs_picker_icon_text {
+    background-image: url(assets/text_white.svg);
+}
