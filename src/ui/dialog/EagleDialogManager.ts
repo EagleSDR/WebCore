@@ -1,10 +1,15 @@
 import EagleUtil from "../../../lib/EagleUtil";
+import { EagleDialogButtonType } from "../../../lib/ui/dialog/button/EagleDialogButtonType";
+import IEagleDialog from "../../../lib/ui/dialog/IEagleDialog";
+import IEagleDialogBuilder from "../../../lib/ui/dialog/IEagleDialogBuilder";
+import IEagleDialogManager from "../../../lib/ui/dialog/IEagleDialogManager";
+import EagleDialogBuilder from "./builder/EagleDialogBuilder";
 import EagleDialogBox from "./EagleDialogBox";
 require("./dialog_main.css");
 
 const ANIMATION_TIME: number = 110;
 
-export default class EagleDialogManager {
+export default class EagleDialogManager implements IEagleDialogManager {
 
     constructor(container: HTMLElement) {
         this.root = EagleUtil.CreateElement("div", "eagle_dialog_root", container);
@@ -17,6 +22,46 @@ export default class EagleDialogManager {
     private stack: DialogBoxImpl[] = [];
     private isUpdating: boolean = false;
     private updateWaiting: boolean = false;
+
+    /* PUBLIC API */
+
+    CreateDialogBuilder(): IEagleDialogBuilder {
+        return new EagleDialogBuilder(this);
+    }
+
+    ShowYesNoDialog(title: string, msg: string, yesText: string, yesType: EagleDialogButtonType, noText: string): Promise<boolean> {
+        return new Promise<boolean>((resolve) => {
+            var builder = this.CreateDialogBuilder();
+            var dialog: IEagleDialog;
+            builder.AddTitle(title);
+            builder.AddParagraph(msg);
+            builder.AddButton(yesText, yesType, () => {
+                resolve(true);
+                dialog.Remove();
+            });
+            builder.AddButton(noText, EagleDialogButtonType.NEUTRAL, () => {
+                resolve(false);
+                dialog.Remove();
+            });
+            dialog = builder.Show();
+        });
+    }
+
+    ShowAlertDialog(title: string, msg: string, btnText: string, btnType: EagleDialogButtonType): Promise<void> {
+        return new Promise<void>((resolve) => {
+            var builder = this.CreateDialogBuilder();
+            var dialog: IEagleDialog;
+            builder.AddTitle(title);
+            builder.AddParagraph(msg);
+            builder.AddButton(btnText, btnType, () => {
+                resolve();
+                dialog.Remove();
+            });
+            dialog = builder.Show();
+        });
+    }
+
+    /* PRIVATE API */
 
     // Creates a new dialog box but does not show it.
     CreateDialog(): EagleDialogBox {

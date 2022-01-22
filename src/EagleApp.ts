@@ -2,7 +2,10 @@ import IEagleFileManager from "../lib/core/files/IEagleFileManager";
 import IEagleContext from "../lib/core/IEagleContext";
 import EagleLoggable from "../lib/EagleLoggable";
 import EagleUtil from "../lib/EagleUtil";
+import { EagleDialogButtonType } from "../lib/ui/dialog/button/EagleDialogButtonType";
+import IEagleDialog from "../lib/ui/dialog/IEagleDialog";
 import IEagleDialogBuilder from "../lib/ui/dialog/IEagleDialogBuilder";
+import IEagleDialogManager from "../lib/ui/dialog/IEagleDialogManager";
 import IEagleObjectConstructor from "../lib/web/IEagleObjectConstructor";
 import IEagleObjectContext from "../lib/web/IEagleObjectContext";
 import EagleControl from "./core/components/control/EagleControl";
@@ -10,6 +13,7 @@ import EagleControlComponents from "./core/components/control/EagleControlCompon
 import EagleWebFileManager from "./core/components/EagleWebFileManager";
 import EagleRadio from "./core/components/radio/EagleRadio";
 import EaglePluginManager from "./core/plugin/EaglePluginManager";
+import EagleCoreInterface from "./ui/core/EagleCoreInterface";
 import EagleDialogBuilder from "./ui/dialog/builder/EagleDialogBuilder";
 import EagleDialogManager from "./ui/dialog/EagleDialogManager";
 import EagleWindow from "./ui/window/EagleWindow";
@@ -37,7 +41,7 @@ export default class EagleApp extends EagleLoggable implements IEagleContext {
         //Create UI components
         this.dialogManager = new EagleDialogManager(mount);
         this.windowManager = new EagleWindowManager(mount);
-        this.windowBar = new EagleWindowFactoryBar(EagleUtil.CreateElement("div", null, mount), this.windowManager);
+        this.coreUi = new EagleCoreInterface(this, this.mount);
 
         //TEST
         RegisterTestWindows(this.windowManager);
@@ -64,7 +68,7 @@ export default class EagleApp extends EagleLoggable implements IEagleContext {
 
     dialogManager: EagleDialogManager;
     windowManager: EagleWindowManager;
-    windowBar: EagleWindowFactoryBar;
+    coreUi: EagleCoreInterface;
 
     info: EagleEndpointInfo;
     control: EagleControl;
@@ -108,6 +112,9 @@ export default class EagleApp extends EagleLoggable implements IEagleContext {
         //Initialize plugins
         await this.plugins.PostInit();
 
+        //Initialize core UI
+        await this.coreUi.Initialize();
+
         //Restore windows
         this.windowManager.LoadAll();
     }
@@ -127,12 +134,18 @@ export default class EagleApp extends EagleLoggable implements IEagleContext {
         return this.CreateManagedSocketById(id);
     }
 
+    GetWindowFactory(): EagleWindowFactoryBar {
+        return this.coreUi.customize;
+    }
+
+    /* API */
+
     GetFileManager(): IEagleFileManager {
         return this.components.GetFileManager();
     }
 
-    CreateDialogBuilder(): IEagleDialogBuilder {
-        return new EagleDialogBuilder(this.dialogManager);
+    GetDialogManager(): IEagleDialogManager {
+        return this.dialogManager;
     }
 
 }

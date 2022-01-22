@@ -21,7 +21,7 @@ export default abstract class EagleWebFilePicker {
         this.context = context;
 
         //Create builder
-        this.builder = context.CreateDialogBuilder();
+        this.builder = context.GetDialogManager().CreateDialogBuilder();
 
         //Create container
         this.nodeContainer = EagleUtil.CreateElement("div", "eagle_webfs_picker");

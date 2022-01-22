@@ -1,6 +1,8 @@
 import EagleUtil from "../../../../lib/EagleUtil";
 import IEagleDialogViewBuilder from "../../../../lib/ui/dialog/IEagleDialogViewBuilder";
+import IEagleDialogList from "../../../../lib/ui/dialog/list/IEagleDialogList";
 import IEagleDialogTextBox from "../../../../lib/ui/dialog/text/IEagleDialogTextBox";
+import EagleDialogComponentList from "./list/EagleDialogComponentList";
 require('./dialog_view.css');
 
 export default class EagleDialogViewBuilder implements IEagleDialogViewBuilder {
@@ -21,6 +23,10 @@ export default class EagleDialogViewBuilder implements IEagleDialogViewBuilder {
 
     AddParagraph(text: string): IEagleDialogTextBox {
         return new ETextBox(this.content, "eagle_dialog_builder_paragraph", text);
+    }
+
+    AddList(): IEagleDialogList {
+        return new EagleDialogComponentList(this.content);
     }
 
 }

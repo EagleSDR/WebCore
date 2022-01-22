@@ -1,0 +1,58 @@
+.eagle_dialog_component_list {
+    padding:15px;
+    overflow-y: scroll;
+    height: 350px;
+}
+
+.eagle_dialog_component_list_loading {
+    background-image: url(../../../assets/loader_white.svg);
+    background-size: 32px;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+.eagle_dialog_component_list_loading * {
+    display: none;
+}
+
+.eagle_dialog_component_list_item {
+    padding: 15px;
+    background-color: #43464a;
+    margin-bottom: 10px;
+    border-radius: 5px;
+    color: white;
+    border: 1px solid #1c1c1c;
+    cursor: pointer;
+    background-image: url(../../../../core/components/webfs/picker/assets/file_white.svg);
+    background-repeat: no-repeat;
+    background-position-x: 15px;
+    background-position-y: center;
+    background-size: 24px;
+    padding-left: 54px;
+}
+
+.eagle_dialog_component_list_item:last-of-type {
+    margin-bottom: 0;
+}
+
+.eagle_dialog_component_list_item:hover {
+    background-color: #4e5154;
+}
+
+.eagle_dialog_component_list_item_selected {
+    background-color: #5b5e64 !important;
+    border-color: #898b8f !important;
+}
+
+.eagle_dialog_component_list_item_title {
+    font-weight: 600;
+    color: white;
+    font-size: 15px;
+    margin-bottom: 5px;
+}
+
+.eagle_dialog_component_list_item_sub {
+    font-weight: 400;
+    color: #d1d1d1;
+    font-size: 15px;
+}

@@ -1,4 +1,5 @@
 import IEagleContext from "../../../lib/core/IEagleContext";
+import IEagleKeyValuePersistentStorage from "../../../lib/misc/IEagleKeyValuePersistentStorage";
 import IEaglePluginDemodulator from "../../../lib/plugin/client/IEaglePluginDemodulator";
 import IEaglePluginSource from "../../../lib/plugin/client/IEaglePluginSource";
 import IEaglePluginAsset from "../../../lib/plugin/IEaglePluginAsset";
@@ -14,8 +15,10 @@ import IEagleObjectContext from "../../../lib/web/IEagleObjectContext";
 import IEagleObjectFactory from "../../../lib/web/IEagleObjectFactory";
 import EagleApp from "../../EagleApp";
 import EagleEndpointInfoPlugin from "../../web/endpoints/info/EagleEndpointInfoPlugin";
+import EagleKeyValuePersistentStorage from "../misc/EagleKeyValuePersistentStorage";
 import EaglePluginAsset from "./EaglePluginAsset";
 import EaglePluginManager from "./EaglePluginManager";
+import EaglePluginRegisteredType from "./EaglePluginRegisteredType";
 import EaglePluginWindowInstance from "./EaglePluginWindowInstance";
 import EaglePluginWindowRegistration from "./EaglePluginWindowRegistration";
 
@@ -119,7 +122,7 @@ export default class EaglePluginContext implements IEaglePluginContext {
         this.windowInstances.push(w);
 
         //Register
-        this.app.windowBar.AddItem(w);
+        this.app.GetWindowFactory().AddItem(w);
     }
 
     UnregisterWindowInstance(instance: IEaglePluginWindowInstance): void {
@@ -136,7 +139,7 @@ export default class EaglePluginContext implements IEaglePluginContext {
         this.windowInstances.splice(i, 1);
 
         //Unregister
-        this.app.windowBar.RemoveItem(wrapper);
+        this.app.GetWindowFactory().RemoveItem(wrapper);
     }
 
     CreateSocket(name: string): IEagleManagedSocket {
@@ -147,16 +150,20 @@ export default class EaglePluginContext implements IEaglePluginContext {
         return this.app;
     }
 
+    GetPersistentStorage(): IEagleKeyValuePersistentStorage {
+        return new EagleKeyValuePersistentStorage("eaglesdr.plugins." + this.GetId());
+    }
+
     private RegisterClass(classname: string, constructor: IEaglePluginObjectConstructor): void {
         this.app.net.RegisterClassFactory(classname, new EaglePluginObjectConstructionProxy(this, constructor));
     }
 
     private RegisterSource(source: IEaglePluginSource): void {
-        throw new Error("Method not implemented.");
+        this.manager.RegisteredSources.push(new EaglePluginRegisteredType(this, source));
     }
 
     private RegisterDemodulator(demod: IEaglePluginDemodulator): void {
-        throw new Error("Method not implemented.");
+        this.manager.RegisteredDemodulators.push(new EaglePluginRegisteredType(this, demod));
     }
 
     private RegisterWindow(classname: string, registration: IEaglePluginWindowRegistration) {

@@ -53,7 +53,7 @@ export default abstract class EagleWebFileBasePicker extends EagleWebFilePicker 
 
     private ShowErrorDialog(text: string): Promise<void> {
         return new Promise<void>((resolve) => {
-            var builder = this.GetContext().CreateDialogBuilder();
+            var builder = this.GetContext().GetDialogManager().CreateDialogBuilder();
             builder.AddTitle("Unable To Open File");
             builder.AddParagraph("The file \"" + this.GetFileName() + "\" couldn't be open due to an error:\n\n" + text);
             var dialog: IEagleDialog;
@@ -76,20 +76,24 @@ export default abstract class EagleWebFileBasePicker extends EagleWebFilePicker 
         }
 
         //Send out complete notification
-        this.completeCallback({
+        this.completeCallback(EagleWebFileBasePicker.WrapPickedFile(this, token));
+
+        //Close the dialog
+        this.CloseDialog();
+    }
+
+    private static WrapPickedFile(ctx: EagleWebFileBasePicker, token: string): IEaglePickedFile {
+        return {
             GetName(): string {
-                return this.GetFileName();
+                return ctx.GetFileName();
             },
             GetFullName(): string {
-                return this.GetFilePath();
+                return ctx.GetFilePath();
             },
             GetToken(): string {
                 return token;
             }
-        });
-
-        //Close the dialog
-        this.CloseDialog();
+        };
     }
 
     /* Implementations */

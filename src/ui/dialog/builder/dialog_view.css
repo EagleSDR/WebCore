@@ -1,9 +1,9 @@
 .eagle_dialog_builder_title {
-    padding: 0 15px;
-    margin: 15px 0;
+    padding: 15px;
     color: white;
     font-size: 15px;
     font-weight: 700;
+    background-color: #2f3136;
 }
 
 .eagle_dialog_builder_paragraph {

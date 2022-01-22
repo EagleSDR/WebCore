@@ -1,0 +1,23 @@
+.eagle_core_btns_power_play {
+    background-color:#3882dc !important;
+    background-image:url(../../assets/play_white.svg);
+}
+
+.eagle_core_btns_power_play:hover {
+    background-color:#4a90e5 !important;
+}
+
+.eagle_core_btns_power_pause {
+    background-color: #3882dc !important;
+    background-image: url(../../assets/pause_white.svg);
+}
+
+.eagle_core_btns_power_pause:hover {
+    background-color: #4a90e5 !important;
+}
+
+/* CUSTOMIZE */
+
+.eagle_core_btns_customize {
+    background-image: url(../../assets/customize_white.svg);
+}

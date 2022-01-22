@@ -1,0 +1,42 @@
+.eagle_core_sidebar {
+    position: fixed;
+    left: 0;
+    bottom: 0;
+    top: 0;
+    width: 230px;
+    background: #36393f;
+    z-index: 11;
+}
+
+.eagle_core_sidebar_control {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 60px;
+    padding: 0 5px;
+    display: flex;
+    flex-direction: row;
+}
+
+.eagle_core_sidebar_btn {
+    margin: 10px 0;
+    margin-left: 5px;
+    width: 38px;
+    height: 38px;
+    background-color: #4a4d52;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: 24px;
+    cursor: pointer;
+    border-radius: 5px;
+    border: 1px solid #121314;
+}
+
+.eagle_core_sidebar_btn:hover {
+    background-color: #56595e;
+}
+
+.eagle_core_sidebar_btn_loading {
+    background-image:url(../../assets/loader_white.svg) !important;
+}

@@ -17,7 +17,7 @@ export default class EagleWebFileSavePicker extends EagleWebFileBasePicker {
 
     private ShowConfirmationDialog(): Promise<boolean> {
         return new Promise<boolean>((resolve) => {
-            var builder = this.GetContext().CreateDialogBuilder();
+            var builder = this.GetContext().GetDialogManager().CreateDialogBuilder();
             builder.AddTitle("File Already Exists");
             builder.AddParagraph("The file \"" + this.GetFileName() + "\" already exists. Would you like to overwrite it?");
             var dialog: IEagleDialog;
