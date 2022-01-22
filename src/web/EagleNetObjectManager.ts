@@ -1,6 +1,7 @@
 import IEagleContext from "../../lib/core/IEagleContext";
 import EagleEventDispatcher from "../../lib/EagleEventDispatcher";
 import EagleLoggable from "../../lib/EagleLoggable";
+import { EagleDialogButtonType } from "../../lib/ui/dialog/button/EagleDialogButtonType";
 import EagleObject from "../../lib/web/EagleObject";
 import IEagleObjectConstructor from "../../lib/web/IEagleObjectConstructor";
 import IEagleObjectContext from "../../lib/web/IEagleObjectContext";
@@ -26,19 +27,18 @@ class EagleObjectConstructionProxy implements IEagleObjectFactory {
 
 export default class EagleNetObjectManager extends EagleLoggable implements IEagleObjectManager {
 
-    constructor(app: EagleApp, url: string) {
+    constructor(app: EagleApp) {
         super("EagleNetObjectManager");
-        this.url = url;
         this.app = app;
     }
 
-    Connect(): Promise<EagleObject> {
+    Connect(url: string): Promise<EagleObject> {
         return new Promise<EagleObject>((resolve, reject) => {
             //Set
             this.connectCallback = resolve;
 
             //Create socket
-            this.sock = new WebSocket(this.url);
+            this.sock = new WebSocket(url);
             this.sock.addEventListener("open", (evt: Event) => {
                 this.Log("WebSocket connection opened.");
                 this.OnReady.Send(this);
@@ -48,6 +48,7 @@ export default class EagleNetObjectManager extends EagleLoggable implements IEag
             });
             this.sock.addEventListener("close", (evt: CloseEvent) => {
                 this.Log("WebSocket connection closed.");
+                this.OnDisconnect();
             });
         });
     }
@@ -55,7 +56,6 @@ export default class EagleNetObjectManager extends EagleLoggable implements IEag
     OnReady: EagleEventDispatcher<EagleNetObjectManager> = new EagleEventDispatcher<EagleNetObjectManager>();
 
     private app: EagleApp;
-    private url: string;
     private sock: WebSocket;
     private classes: { [key: string]: IEagleObjectFactory } = {};
     private io: { [guid: string]: EagleNetObjectIO } = {};
@@ -185,6 +185,17 @@ export default class EagleNetObjectManager extends EagleLoggable implements IEag
             "p": payload
         }
         this.sock.send(JSON.stringify(msg));
+    }
+
+    private OnDisconnect(): void {
+        var builder = this.app.GetDialogManager().CreateDialogBuilder();
+        builder.AddTitle("Connection Lost");
+        builder.AddParagraph("There was a network problem communicating with the EagleSDR server. Check your internet connection.");
+        var btn = builder.AddButton("Reload", EagleDialogButtonType.NEGATIVE, () => {
+            btn.SetLoading(true);
+            document.location.reload();            
+        });
+        builder.Show();
     }
 
 }

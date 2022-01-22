@@ -12,10 +12,12 @@ import EagleControl from "./core/components/control/EagleControl";
 import EagleControlComponents from "./core/components/control/EagleControlComponents";
 import EagleWebFileManager from "./core/components/EagleWebFileManager";
 import EagleRadio from "./core/components/radio/EagleRadio";
+import EagleKeyValuePersistentStorage from "./core/misc/EagleKeyValuePersistentStorage";
 import EaglePluginManager from "./core/plugin/EaglePluginManager";
 import EagleCoreInterface from "./ui/core/EagleCoreInterface";
 import EagleDialogBuilder from "./ui/dialog/builder/EagleDialogBuilder";
 import EagleDialogManager from "./ui/dialog/EagleDialogManager";
+import PromptLoginDialog from "./ui/login/EagleLoginDialog";
 import EagleWindow from "./ui/window/EagleWindow";
 import EagleWindowManager from "./ui/window/EagleWindowManager";
 import EagleWindowFactoryBar from "./ui/window/factory/EagleWindowFactoryBar";
@@ -33,27 +35,14 @@ export default class EagleApp extends EagleLoggable implements IEagleContext {
         this.netRoot = netRoot;
 
         //Create components
-        this.net = new EagleNetObjectManager(this, this.CreateUrl(true, "/ws/rpc", {
-            "access_token": this.GetAccessToken()
-        }));
+        this.storage = new EagleKeyValuePersistentStorage("eaglesdr");
+        this.net = new EagleNetObjectManager(this);
         this.plugins = new EaglePluginManager(this);
 
         //Create UI components
         this.dialogManager = new EagleDialogManager(mount);
         this.windowManager = new EagleWindowManager(mount);
         this.coreUi = new EagleCoreInterface(this, this.mount);
-
-        //TEST
-        RegisterTestWindows(this.windowManager);
-        var t = EagleUtil.CreateElement("div", "LAYER_TEST", mount);
-        t.style.backgroundColor = "#0a0b0c";
-        t.style.position = "fixed";
-        t.style.top = "0";
-        t.style.bottom = "0";
-        t.style.right = "0";
-        t.style.left = "180px";
-        var c = new EagleDockWindowLayer(t, this.windowManager);
-        this.windowManager.RegisterLayer("test", c);
 
         //Register core components
         this.RegisterClass("EagleWeb.Core.Web.EagleControlObject", EagleControl);
@@ -63,6 +52,8 @@ export default class EagleApp extends EagleLoggable implements IEagleContext {
 
     mount: HTMLElement;
     netRoot: string;
+
+    storage: EagleKeyValuePersistentStorage;
     net: EagleNetObjectManager;
     plugins: EaglePluginManager;
 
@@ -76,7 +67,11 @@ export default class EagleApp extends EagleLoggable implements IEagleContext {
     pluginModules: { [pluginId: string]: { [classname: string]: string } };
 
     GetAccessToken(): string {
-        return "90VuwPtqv135S1TwjDVvehU4Dy94XO7T"; //TODO
+        return this.storage.GetValue<string>("access_token");
+    }
+
+    SetAccessToken(token: string) {
+        this.storage.SetValue("access_token", token);
     }
 
     private IsSsl(): boolean {
@@ -101,11 +96,17 @@ export default class EagleApp extends EagleLoggable implements IEagleContext {
         //Request info
         this.info = await EagleUtil.HttpGetRequestJson(this.CreateUrl(false, "/api/info", {})) as EagleEndpointInfo;
 
+        //Show login screen if needed
+        if (this.GetAccessToken() == null)
+            this.SetAccessToken(await PromptLoginDialog(this, this.mount));
+
         //Load plugins
         await this.plugins.Init();
 
         //Connect to WebSocket and get objects
-        this.control = await this.net.Connect() as EagleControl;
+        this.control = await this.net.Connect(this.CreateUrl(true, "/ws/rpc", {
+            "access_token": this.GetAccessToken()
+        })) as EagleControl;
         this.components = await this.control.GetComponents();
         this.pluginModules = await this.control.GetPluginModules();
 

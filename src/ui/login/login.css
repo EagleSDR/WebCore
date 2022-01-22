@@ -1,0 +1,75 @@
+.eagle_login_container {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
+    background: #0a0b0c;
+    display: flex;
+    opacity: 1;
+    transition: all 100ms ease-in;
+}
+
+.eagle_login_content {
+    padding: 30px;
+    background: #36393f;
+    margin: auto;
+    border-radius: 5px;
+    font-family: 'Roboto', sans-serif;
+    width: 400px;
+    display: flex;
+    flex-direction: column;
+    transition: all 100ms ease-in;
+}
+
+.eagle_login_closing {
+    opacity: 0;
+    pointer-events: none;
+    padding-top: 100px;
+}
+
+.eagle_login_form_title {
+    font-size: 13px;
+    color: #c3c3c3;
+    text-transform: uppercase;
+    font-weight: 700;
+    margin-bottom: 5px;
+}
+
+.eagle_login_form_input {
+    padding: 10px;
+    background-color: #55585e;
+    border: 1px solid #0a0b0c;
+    margin: 0;
+    outline: none;
+    color: white;
+    border-radius: 5px;
+    margin-bottom: 10px;
+}
+
+.eagle_login_confirm {
+    color: white;
+    font-size: 15px;
+    text-transform: uppercase;
+    padding: 15px 20px;
+    text-align: center;
+    border-radius: 5px;
+    background-color: #3882dc;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: 24px;
+    border: 1px solid #121314;
+    cursor: pointer;
+    margin-top: 60px;
+}
+
+.eagle_login_confirm:hover {
+    background-color: #4a90e5;
+}
+
+.eagle_login_loading .eagle_login_confirm {
+    background-color: #4a90e5;
+    background-image: url(../assets/loader_white.svg);
+    color: transparent;
+}

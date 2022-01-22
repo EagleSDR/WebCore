@@ -21,11 +21,11 @@ interface ISavedData {
 
 export default class EagleWindowManager extends EagleLoggable {
 
-    constructor(floatingWindowMount: HTMLElement) {
+    constructor(floatingWindowContainer: HTMLElement) {
         super("EagleWindowManager");
 
         //Create and register floating window layer
-        this.floatingWindowLayer = new EagleFloatingWindowLayer(floatingWindowMount, this);
+        this.floatingWindowLayer = new EagleFloatingWindowLayer(EagleUtil.CreateElement("div", "eagle_window_floating", floatingWindowContainer), this);
         this.RegisterLayer("EagleSDR.Floating", this.floatingWindowLayer);
     }
 

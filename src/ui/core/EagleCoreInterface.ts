@@ -7,7 +7,9 @@ import EaglePluginContext from "../../core/plugin/EaglePluginContext";
 import EagleApp from "../../EagleApp";
 import EagleCoreSidebarBtnCustomize from "./btns/EagleCoreSidebarBtnCustomize";
 import EagleCoreSidebarBtnPower from "./btns/EagleCoreSidebarBtnPower";
+import EagleCoreContent from "./content/EagleCoreContent";
 import EagleCoreCustomize from "./customize/EagleCoreCustomize";
+import EagleCoreHeader from "./header/EagleCoreHeader";
 import EagleCoreSidebar from "./sidebar/EagleCoreSidebar";
 
 export default class EagleCoreInterface {
@@ -18,12 +20,16 @@ export default class EagleCoreInterface {
         //Create bits
         this.sidebar = new EagleCoreSidebar(app, container);
         this.customize = new EagleCoreCustomize(app, container);
+        this.content = new EagleCoreContent(app, container);
+        this.header = new EagleCoreHeader(app, container);
     }
 
     private app: EagleApp;
 
     sidebar: EagleCoreSidebar;
     customize: EagleCoreCustomize;
+    content: EagleCoreContent;
+    header: EagleCoreHeader;
 
     async Initialize() {
         //Add buttons

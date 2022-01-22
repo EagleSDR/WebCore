@@ -80,6 +80,13 @@
     cursor:se-resize;
 }
 
+/* FLOATING WINDOW */
+
+.eagle_window_floating {
+    z-index: 50;
+    position: fixed;
+}
+
 /* ERROR WINDOW */
 
 .eagle_window_notfound {

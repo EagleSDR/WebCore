@@ -5,7 +5,7 @@
     top: 0;
     width: 230px;
     background: #e3e4e5;
-    z-index: 12;
+    z-index: 60;
     transition: left 120ms cubic-bezier(0.13, 0.96, 0.54, 1);
 }
 

@@ -146,10 +146,18 @@ class BarItem {
         this.label.innerText = reg.GetDisplayName();
 
         //Add events
-        this.view.addEventListener("mousedown", (evt: MouseEvent) => {
+        var mouseMoveEvent = (evt: MouseEvent) => {
             this.manager.CreateWindowClassDragging(this.reg.GetRegistration(), this.reg.GetSettings(), 300, 200, evt);
             evt.preventDefault();
             evt.stopPropagation();
+        }
+        this.view.addEventListener("mousedown", (evt: MouseEvent) => {
+            window.addEventListener("mousemove", mouseMoveEvent, {
+                once: true
+            });
+        });
+        window.addEventListener("mouseup", (evt: MouseEvent) => {
+            window.removeEventListener("mousemove", mouseMoveEvent);
         });
     }
 
