@@ -7,6 +7,7 @@ import EaglePluginContext from "../../core/plugin/EaglePluginContext";
 import EagleApp from "../../EagleApp";
 import EagleCoreSidebarBtnCustomize from "./btns/EagleCoreSidebarBtnCustomize";
 import EagleCoreSidebarBtnPower from "./btns/EagleCoreSidebarBtnPower";
+import EagleCoreSidebarBtnMute from "./btns/EagleCoreSidebarBtnMute";
 import EagleCoreContent from "./content/EagleCoreContent";
 import EagleCoreCustomize from "./customize/EagleCoreCustomize";
 import EagleCoreHeader from "./header/EagleCoreHeader";
@@ -35,6 +36,10 @@ export default class EagleCoreInterface {
         //Add buttons
         this.sidebar.AddButton(new EagleCoreSidebarBtnPower(this.app));
         this.sidebar.AddButton(new EagleCoreSidebarBtnCustomize(this.customize));
+        this.sidebar.AddButton(new EagleCoreSidebarBtnMute(this.app));
+
+        //Initialize the header
+        this.header.Init();
     }
 
 }

@@ -27,7 +27,7 @@ export default class EagleCoreSidebarBtnPower extends EagleCoreSidebarBtn {
     private app: EagleApp;
 
     private GetPowerPort(): IEaglePortProperty<boolean> {
-        return this.app.components.GetRadio().PortIsEnabled;
+        return this.app.components.GetRadio().Enabled();
     }
 
     private Refresh() {
@@ -56,18 +56,18 @@ export default class EagleCoreSidebarBtnPower extends EagleCoreSidebarBtn {
             return;
 
         //Set the source
-        await this.app.components.GetRadio().PortSource.SetValue(sourceImpl);
+        await this.app.components.GetRadio().Source().SetValue(sourceImpl);
 
         //Start the radio
-        await this.app.components.GetRadio().PortIsEnabled.SetValue(true);
+        await this.GetPowerPort().SetValue(true);
     }
 
     private async StopRadio(): Promise<void> {
         //Stop the radio
-        await this.app.components.GetRadio().PortIsEnabled.SetValue(false);
+        await this.GetPowerPort().SetValue(false);
 
         //Set the source...(should we do some cleanup here?)
-        await this.app.components.GetRadio().PortSource.SetValue(null);
+        await this.app.components.GetRadio().Source().SetValue(null);
     }
 
     private PromptSelectSource(): Promise<IEaglePluginSourceOption> {

@@ -6,4 +6,8 @@
     height: 60px;
     background: #24262a;
     z-index: 10;
+    padding-left: 240px;
+    padding-right: 10px;
+    display: flex;
+    flex-direction: row;
 }

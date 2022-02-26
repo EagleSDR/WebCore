@@ -184,6 +184,11 @@ export default class EagleWindow implements IEagleWindowContext {
     private width: number;
     private height: number;
 
+    private minWidth: number = 100;
+    private maxWidth: number = 600;
+    private minHeight: number = 100;
+    private maxHeight: number = 600;
+
     private winSettings: any;
     private implementation: EagleWindowImplementation;
 
@@ -239,20 +244,36 @@ export default class EagleWindow implements IEagleWindowContext {
         this.implementation.OnResized();
     }
 
+    SetMinWidth(width: number): void {
+        this.minWidth = width;
+    }
+
+    SetMaxWidth(width: number): void {
+        this.maxWidth = width;
+    }
+
+    SetMinHeight(height: number): void {
+        this.minHeight = height;
+    }
+
+    SetMaxHeight(height: number): void {
+        this.maxHeight = height;
+    }
+
     GetMinWidth(): number {
-        return 100;
+        return this.minWidth;
     }
 
     GetMinHeight(): number {
-        return 100;
+        return this.minHeight;
     }
 
     GetMaxWidth(): number {
-        return 600;
+        return this.maxWidth;
     }
 
     GetMaxHeight(): number {
-        return 600;
+        return this.maxHeight;
     }
 
     WindowActivated(): void {
@@ -275,6 +296,14 @@ export default class EagleWindow implements IEagleWindowContext {
 
     GetBoundingClientRect(): DOMRect {
         return this.frame.root.getBoundingClientRect();
+    }
+
+    GetContainerWidth(): number {
+        return this.width;
+    }
+
+    GetContainerHeight(): number {
+        return this.height;
     }
 
     private ActivateWindow(): void {
@@ -358,12 +387,12 @@ export default class EagleWindow implements IEagleWindowContext {
 
     //Gets the width of the window content.
     GetWidth(): number {
-        return Math.floor(this.width - this.GetContentPaddingLeft() - this.GetContentPaddingRight());
+        return Math.floor(this.GetContainerWidth() - this.GetContentPaddingLeft() - this.GetContentPaddingRight());
     }
 
     //Gets the height of the window content.
     GetHeight(): number {
-        return Math.floor(this.height - this.GetContentPaddingTop() - this.GetContentPaddingBottom());
+        return Math.floor(this.GetContainerHeight() - this.GetContentPaddingTop() - this.GetContentPaddingBottom());
     }
 
     //Creates a button in the window header
@@ -383,6 +412,9 @@ export default class EagleWindow implements IEagleWindowContext {
         //Detach from container, if any
         if (this.container != null)
             this.container.Detach();
+
+        //Notify
+        this.implementation.OnClosed();
 
         //Save
         this.manager.SaveAll();

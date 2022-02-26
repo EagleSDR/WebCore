@@ -22,14 +22,13 @@
 .eagle_core_sidebar_btn {
     margin: 10px 0;
     margin-left: 5px;
-    width: 38px;
-    height: 38px;
+    width: 40px;
+    height: 40px;
     background-color: #4a4d52;
     background-position: center;
     background-repeat: no-repeat;
     background-size: 24px;
     cursor: pointer;
-    border-radius: 5px;
     border: 1px solid #121314;
 }
 
@@ -39,4 +38,13 @@
 
 .eagle_core_sidebar_btn_loading {
     background-image:url(../../assets/loader_white.svg) !important;
+}
+
+.eagle_core_sidebar_content {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 60px;
+    bottom: 0;
+    overflow-y: scroll;
 }

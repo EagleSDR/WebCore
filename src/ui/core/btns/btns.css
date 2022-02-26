@@ -21,3 +21,13 @@
 .eagle_core_btns_customize {
     background-image: url(../../assets/customize_white.svg);
 }
+
+/* AUDIO */
+
+.eagle_core_btns_volume_on {
+    background-image: url(../../assets/volume_on_white.svg);
+}
+
+.eagle_core_btns_volume_off {
+    background-image: url(../../assets/volume_off_white.svg);
+}

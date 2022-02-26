@@ -47,18 +47,40 @@ export default class EagleDialogManager implements IEagleDialogManager {
         });
     }
 
-    ShowAlertDialog(title: string, msg: string, btnText: string, btnType: EagleDialogButtonType): Promise<void> {
+    ShowAlertDialog(title: string, msg: string, btnText: string, btnType: EagleDialogButtonType, btnAction?: () => Promise<void>): Promise<void> {
         return new Promise<void>((resolve) => {
             var builder = this.CreateDialogBuilder();
             var dialog: IEagleDialog;
             builder.AddTitle(title);
             builder.AddParagraph(msg);
-            builder.AddButton(btnText, btnType, () => {
-                resolve();
-                dialog.Remove();
+            var btn = builder.AddButton(btnText, btnType, () => {
+                if (btnAction != null) {
+                    btn.SetLoading(true);
+                    btnAction().then(() => {
+                        resolve();
+                        dialog.Remove();
+                    });
+                } else {
+                    resolve();
+                    dialog.Remove();
+                }
             });
             dialog = builder.Show();
         });
+    }
+
+    // Shows a dialog that requests the user to reload the app
+    ShowFatalErrorDialog(title: string, msg: string): Promise<void> {
+        return this.ShowAlertDialog(
+            title, msg,
+            "Reload",
+            EagleDialogButtonType.NEGATIVE,
+            () => {
+                return new Promise<void>((resolve) => {
+                    window.location.reload();
+                });
+            }
+        );
     }
 
     /* PRIVATE API */

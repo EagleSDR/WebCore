@@ -20,6 +20,10 @@ export default class EagleKeyValuePersistentStorage implements IEagleKeyValuePer
             return JSON.parse(raw) as T;
     }
 
+    DeleteValue(key: string): void {
+        localStorage.removeItem(this.namespace + "." + key);
+    }
+
     CreateChild(namespace: string) {
         return new EagleKeyValuePersistentStorage(this.namespace + "." + namespace);
     }

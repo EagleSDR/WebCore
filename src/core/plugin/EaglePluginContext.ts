@@ -1,3 +1,4 @@
+import IEagleAudioProvider from "../../../lib/core/audio/IEagleAudioProvider";
 import IEagleContext from "../../../lib/core/IEagleContext";
 import IEagleKeyValuePersistentStorage from "../../../lib/misc/IEagleKeyValuePersistentStorage";
 import IEaglePluginDemodulator from "../../../lib/plugin/client/IEaglePluginDemodulator";
@@ -79,6 +80,12 @@ export default class EaglePluginContext implements IEaglePluginContext {
         //Add sources
         for (var i = 0; i < config.sources.length; i++)
             this.RegisterSource(config.sources[i]);
+
+        //Add audio providers
+        if (config.audio_providers != null) {
+            for (var i = 0; i < config.audio_providers.length; i++)
+                this.app.audio.RegisterProvider(new PluginAudioProvider(this, config.audio_providers[i]));
+        }
     }
 
     GetModule(classname: string): EagleObject {
@@ -183,6 +190,46 @@ export default class EaglePluginContext implements IEaglePluginContext {
         var k = Object.keys(dict);
         for (var i = 0; i < k.length; i++)
             each(k[i], dict[k[i]]);
+    }
+
+}
+
+class PluginAudioProvider implements IEagleAudioProvider {
+
+    constructor(plugin: EaglePluginContext, underlying: IEagleAudioProvider) {
+        this.plugin = plugin;
+        this.underlying = underlying;
+    }
+
+    private plugin: EaglePluginContext;
+    private underlying: IEagleAudioProvider;
+
+    GetId(): string {
+        return this.plugin.GetId() + "." + this.underlying.GetId();
+    }
+
+    GetDisplayName(): string {
+        return this.underlying.GetDisplayName();
+    }
+
+    GetPriority(): boolean {
+        return this.underlying.GetPriority();
+    }
+
+    GetIsCompatible(): boolean {
+        return this.underlying.GetIsCompatible();
+    }
+
+    StartAudio(volume: number): Promise<void> {
+        return this.underlying.StartAudio(volume);
+    }
+
+    SetVolume(value: number): void {
+        return this.underlying.SetVolume(value);
+    }
+
+    StopAudio(): Promise<void> {
+        return this.underlying.StopAudio();
     }
 
 }

@@ -138,11 +138,13 @@ class BarItem {
 
         //Create item
         this.view = EagleUtil.CreateElement("div", "eagle_window_bar_item");
-        this.preview = EagleUtil.CreateElement("div", "eagle_window_bar_item_preview", this.view);
+        this.preview = EagleUtil.CreateElement("canvas", "eagle_window_bar_item_preview", this.view) as HTMLCanvasElement;
         this.label = EagleUtil.CreateElement("div", "eagle_window_bar_item_label", this.view);
 
         //Set content
-        this.preview.appendChild(reg.GetPreview());
+        this.preview.width = 50;
+        this.preview.height = 50;
+        reg.GetPreview(this.preview.getContext('2d'), 50, 50);
         this.label.innerText = reg.GetDisplayName();
 
         //Add events
@@ -166,7 +168,7 @@ class BarItem {
 
     private view: HTMLElement;
     private label: HTMLElement;
-    private preview: HTMLElement;
+    private preview: HTMLCanvasElement;
 
     GetNode(): HTMLElement {
         return this.view;

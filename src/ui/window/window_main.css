@@ -1,5 +1,5 @@
 .eagle_window_root {
-    position: fixed;
+    position: relative;
     background-color: black;
     overflow: hidden;
     font-family: 'Roboto', sans-serif;
@@ -14,6 +14,7 @@
 .eagle_window_dragging {
     opacity: 0.25;
     pointer-events: none;
+    position: fixed;
 }
 
 .eagle_window_active.eagle_window_root_border {

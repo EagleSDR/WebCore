@@ -1,5 +1,6 @@
 import IEagleFileManager from "../lib/core/files/IEagleFileManager";
 import IEagleContext from "../lib/core/IEagleContext";
+import IEagleRadio from "../lib/core/radio/IEagleRadio";
 import EagleLoggable from "../lib/EagleLoggable";
 import EagleUtil from "../lib/EagleUtil";
 import { EagleDialogButtonType } from "../lib/ui/dialog/button/EagleDialogButtonType";
@@ -8,10 +9,12 @@ import IEagleDialogBuilder from "../lib/ui/dialog/IEagleDialogBuilder";
 import IEagleDialogManager from "../lib/ui/dialog/IEagleDialogManager";
 import IEagleObjectConstructor from "../lib/web/IEagleObjectConstructor";
 import IEagleObjectContext from "../lib/web/IEagleObjectContext";
+import EagleAudioManager from "./core/components/audio/EagleAudioManager";
 import EagleControl from "./core/components/control/EagleControl";
 import EagleControlComponents from "./core/components/control/EagleControlComponents";
 import EagleWebFileManager from "./core/components/EagleWebFileManager";
 import EagleRadio from "./core/components/radio/EagleRadio";
+import EagleRadioSession from "./core/components/radio/EagleRadioSession";
 import EagleKeyValuePersistentStorage from "./core/misc/EagleKeyValuePersistentStorage";
 import EaglePluginManager from "./core/plugin/EaglePluginManager";
 import EagleCoreInterface from "./ui/core/EagleCoreInterface";
@@ -37,16 +40,18 @@ export default class EagleApp extends EagleLoggable implements IEagleContext {
         //Create components
         this.storage = new EagleKeyValuePersistentStorage("eaglesdr");
         this.net = new EagleNetObjectManager(this);
+        this.audio = new EagleAudioManager(this);
         this.plugins = new EaglePluginManager(this);
 
         //Create UI components
         this.dialogManager = new EagleDialogManager(mount);
-        this.windowManager = new EagleWindowManager(mount);
+        this.windowManager = new EagleWindowManager(this, mount);
         this.coreUi = new EagleCoreInterface(this, this.mount);
 
         //Register core components
         this.RegisterClass("EagleWeb.Core.Web.EagleControlObject", EagleControl);
         this.RegisterClass("EagleWeb.Core.Radio.EagleRadio", EagleRadio);
+        this.RegisterClass("EagleWeb.Core.Radio.EagleRadioSession", EagleRadioSession);
         this.RegisterClass("EagleWeb.Core.Web.FileSystem.WebFsManager", EagleWebFileManager);
     }
 
@@ -55,6 +60,7 @@ export default class EagleApp extends EagleLoggable implements IEagleContext {
 
     storage: EagleKeyValuePersistentStorage;
     net: EagleNetObjectManager;
+    audio: EagleAudioManager;
     plugins: EaglePluginManager;
 
     dialogManager: EagleDialogManager;
@@ -67,11 +73,11 @@ export default class EagleApp extends EagleLoggable implements IEagleContext {
     pluginModules: { [pluginId: string]: { [classname: string]: string } };
 
     GetAccessToken(): string {
-        return this.storage.GetValue<string>("access_token");
+        return this.storage.GetValue<string>("ACCESS_TOKEN");
     }
 
     SetAccessToken(token: string) {
-        this.storage.SetValue("access_token", token);
+        this.storage.SetValue("ACCESS_TOKEN", token);
     }
 
     private IsSsl(): boolean {
@@ -93,6 +99,18 @@ export default class EagleApp extends EagleLoggable implements IEagleContext {
     }
 
     async Init() {
+        try {
+            await this.InternalInit();
+        } catch (error: any) {
+            this.dialogManager.ShowFatalErrorDialog(
+                "Fatal Error Initializing",
+                "There was a fatal error initializing the client. This is likely a bug. Try clearing your browser's local storage.\n\n" + error
+            );
+            throw error;
+        }
+    }
+
+    private async InternalInit() {
         //Request info
         this.info = await EagleUtil.HttpGetRequestJson(this.CreateUrl(false, "/api/info", {})) as EagleEndpointInfo;
 
@@ -109,6 +127,9 @@ export default class EagleApp extends EagleLoggable implements IEagleContext {
         })) as EagleControl;
         this.components = await this.control.GetComponents();
         this.pluginModules = await this.control.GetPluginModules();
+
+        //Initialize the radio
+        await this.GetRadio().Init();
 
         //Initialize plugins
         await this.plugins.PostInit();
@@ -147,6 +168,10 @@ export default class EagleApp extends EagleLoggable implements IEagleContext {
 
     GetDialogManager(): IEagleDialogManager {
         return this.dialogManager;
+    }
+
+    GetRadio(): EagleRadio {
+        return this.components.GetRadio();
     }
 
 }

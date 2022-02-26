@@ -119,6 +119,7 @@ export default class EagleNetObjectManager extends EagleLoggable implements IEag
             case 2: this.OnMessageDelete(guid, payload); break;
             case 3: this.OnMessageEvent(guid, payload); break;
             case 4: this.connectCallback(this.ResolveNetObject(guid)); break;
+            case 5: this.OnMessageObjectReady(guid, payload); break;
             default: this.Error("Server sent unknown message opcode: " + opcode); break;
         }
     }
@@ -131,6 +132,10 @@ export default class EagleNetObjectManager extends EagleLoggable implements IEag
         return null;
     }
 
+    private OnMessageObjectReady(guid: string, payload: any): void {
+        //Do nothing for now...
+    }
+
     private OnMessageCreate(guid: string, payload: any): void {
         //Create the instance
         var instance = new EagleNetObjectInstance(this, payload);
@@ -138,12 +143,15 @@ export default class EagleNetObjectManager extends EagleLoggable implements IEag
         //Get types and search for a matching one
         var mClassName = this.FindMatchingType(instance.GetTypes());
         if (mClassName == null) {
-            this.Warn("Attempted to create \"" + instance.GetTypes()[0] + "\", but no matching registered classes were found! Make sure you register this class with an object. This will likely cause later bugs.");
-            return;
-        }
+            //None found. Send a warning
+            this.Warn("Creating NetObject as type \"" + instance.GetTypes()[0] + "\", but no matching registered classes were found! Make sure you register this class with an object. This will likely cause later bugs.");
 
-        //Instantiate
-        instance.ctx = this.classes[mClassName].InflateObject(instance);
+            //Create a dummy context
+            instance.ctx = {};
+        } else {
+            //Instantiate class
+            instance.ctx = this.classes[mClassName].InflateObject(instance);
+        }
 
         //Set ports
         var names = instance.GetPortNames();

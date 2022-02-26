@@ -1,0 +1,77 @@
+.eagle_window_layer_sidebar_container {
+    position: relative;
+}
+
+.eagle_window_layer_sidebar_light {
+    position: absolute;
+    left: 0;
+    right: 0;
+    height: 6px;
+    z-index: 9999;
+    background-color: #3882dc;
+    opacity: 0;
+    border-radius: 2px;
+}
+
+.eagle_window_layer_sidebar_flap {
+    display: none;
+    z-index: 9999;
+}
+
+.eagle_state_window_dragging .eagle_window_layer_sidebar_container:hover .eagle_window_layer_sidebar_flap {
+    display: block !important;
+}
+
+.eagle_window_layer_sidebar_flap:hover .eagle_window_layer_sidebar_light {
+    opacity: 1;
+}
+
+.eagle_state_window_dragging .eagle_window_layer_sidebar_container .eagle_window_root {
+    pointer-events: none;
+}
+
+/* DUMMY FLAP */
+
+/* Show only when dragging a window and this is the only item */
+.eagle_state_window_dragging .eagle_window_layer_sidebar_container:first-of-type .eagle_window_layer_sidebar_flap_dummy {
+    display: block;
+}
+
+.eagle_window_layer_sidebar_flap_dummy {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+}
+
+.eagle_window_layer_sidebar_flap_dummy .eagle_window_layer_sidebar_light {
+    opacity: 1;
+}
+
+/* SPECIFIC FLAPS */
+
+.eagle_window_layer_sidebar_flap_top {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 50%;
+}
+
+.eagle_window_layer_sidebar_flap_top .eagle_window_layer_sidebar_light {
+    top: 0;
+}
+
+.eagle_window_layer_sidebar_flap_bottom {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 50%;
+}
+
+.eagle_window_layer_sidebar_flap_bottom .eagle_window_layer_sidebar_light {
+    bottom: -3px;
+}
+

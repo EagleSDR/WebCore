@@ -24,8 +24,8 @@ export default class EaglePluginWindowInstance implements IEagleWindowFactoryIte
         return this.data.GetGroupName();
     }
 
-    GetPreview(): HTMLElement {
-        return this.data.GetPreview();
+    GetPreview(canvas: CanvasRenderingContext2D, width: number, height: number): void {
+        return this.data.GetPreview(canvas, width, height);
     }
 
     GetSettings() {

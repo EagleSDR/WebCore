@@ -8,9 +8,11 @@ import IEagleWindowLayer from "./IEagleWindowLayer";
 import ISavedWindowData from "./misc/ISavedWindowData";
 import EagleFloatingWindowLayer from "./layers/EagleFloatingWindowLayer";
 import IEagleWindowRegistration from "./IEagleWindowRegistration";
+import EagleApp from "../../EagleApp";
+import { EagleDialogButtonType } from "../../../lib/ui/dialog/button/EagleDialogButtonType";
 
 const SAVE_VERSION = 1;
-const SAVE_KEY = "EagleSDR.SAVED_WINDOW_PREFS";
+const SAVE_KEY = "SAVED_WINDOW_PREFS";
 
 interface ISavedData {
 
@@ -21,14 +23,18 @@ interface ISavedData {
 
 export default class EagleWindowManager extends EagleLoggable {
 
-    constructor(floatingWindowContainer: HTMLElement) {
+    constructor(app: EagleApp, floatingWindowContainer: HTMLElement) {
         super("EagleWindowManager");
+
+        //Set
+        this.app = app;
 
         //Create and register floating window layer
         this.floatingWindowLayer = new EagleFloatingWindowLayer(EagleUtil.CreateElement("div", "eagle_window_floating", floatingWindowContainer), this);
         this.RegisterLayer("EagleSDR.Floating", this.floatingWindowLayer);
     }
 
+    private app: EagleApp;
     private registrations: { [classname: string]: IEagleWindowRegistration } = {};
     private layers: { [key: string]: IEagleWindowLayer } = {};
     private activeWindow: EagleWindow;
@@ -98,29 +104,36 @@ export default class EagleWindowManager extends EagleLoggable {
         if (this.isLoading)
             return;
 
-        //Set
-        window.localStorage.setItem(SAVE_KEY, JSON.stringify(this.CreateSaveData()));
+        //Create and apply
+        try {
+            this.app.storage.SetValue(SAVE_KEY, this.CreateSaveData());
+        } catch (error: any) {
+            this.app.GetDialogManager().ShowAlertDialog("Can't Save Windows", "There was an internal error saving your current window layout:\n\n" + error, "Okay", EagleDialogButtonType.POSITIVE);
+        }
     }
 
     //Loads everything from disk.
     LoadAll() {
-        //Retrieve
-        var raw = window.localStorage.getItem(SAVE_KEY);
-        if (raw == null || raw.length == 0)
-            return;
-
-        //Deserialize
         try {
-            //Decode
-            var js = JSON.parse(raw);
+            //Retrieve
+            var data = this.app.storage.GetValue(SAVE_KEY);
+            if (data == null)
+                return;
 
             //Set flag
             this.isLoading = true;
 
             //Load
-            this.LoadSaveData(js);
-        } catch {
-            this.Warn("Failed to deserialize and load saved window data.");
+            this.LoadSaveData(data);
+        } catch (error: any) {
+            //Log in console
+            this.Warn("Failed to deserialize and load saved window data: " + error);
+
+            //Ask the user to clear
+            this.app.GetDialogManager().ShowAlertDialog("Can't Restore Windows", "Sorry, there was an error loading your saved window layout. Your windows will reset and the page will reload.", "Clear", EagleDialogButtonType.NEGATIVE).then(() => {
+                this.app.storage.DeleteValue(SAVE_KEY);
+                window.location.reload();
+            });
         }
 
         //Set flag
