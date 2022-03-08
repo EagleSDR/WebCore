@@ -1,0 +1,20 @@
+{
+  "developer": "EagleSDR",
+  "name": "CoreWeb",
+  "version_major": 0,
+  "version_minor": 0,
+  "objects": {
+    "native": [],
+    "dotnet": []
+  },
+  "modules": [],
+  "post_commands": [
+    {
+      "command": "npx webpack",
+      "working_directory": "%ROOT%",
+      "platforms": [
+        "*"
+      ]
+    }
+  ]
+}
